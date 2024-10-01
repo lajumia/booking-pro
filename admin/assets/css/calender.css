@@ -1,0 +1,14 @@
+#wpcontent {
+    padding-left: 0px !important;
+}
+
+#bp-calender-root {
+    width: 97%;
+    margin: auto;
+    height: 800px;
+    background: #EDEDF5;
+}
+
+.bp-dash-container {
+    height: 100%;
+}

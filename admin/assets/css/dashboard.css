@@ -1,0 +1,126 @@
+#wpcontent {
+  padding-left: 0px !important;
+}
+
+#bp-dashboard-root {
+  width: 97%;
+  margin: auto;
+  height: 800px;
+  background: #ededf5;
+}
+
+.bp-nav-logo {
+  width: 20px;
+}
+
+ul.bp-nav-menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+ul.bp-nav-menu li:hover a {
+  transition: 0.5s;
+  color: white;
+  background: #687de8;
+}
+
+ul.bp-nav-menu li a {
+  color: black;
+  background: white;
+  padding: 7px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+  font-weight: 500;
+  justify-content: space-between;
+  text-decoration: none;
+}
+
+.bp-dash-content {
+  width: 93.5%;
+  margin: auto;
+  height: 100%;
+  background: white;
+  border-radius: 30px 30px 0 0;
+  padding: 30px 20px;
+  margin-top: 30px;
+}
+
+.bp-dash-header {
+  padding-top: 15px;
+}
+
+/* Content Area CSS */
+.bpdci-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.bpd-filter-by-date {
+  padding: 10px 20px;
+}
+
+.bpdci-second {
+  display: flex;
+  justify-content: flex-start;
+  column-gap: 11px;
+  flex-wrap: wrap;
+}
+
+.bpdci-card {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  flex-basis: 20%;
+  margin-bottom: 15px;
+}
+
+.bpdci-card h1 {
+  font-size: 25px;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.bpdci-card p {
+  font-size: 14px;
+  font-weight: 500;
+  color: black;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0px !important;
+}
+
+table tr {
+  height: 25px;
+}
+
+.bpd-table-head {
+  height: 60px;
+  background: #dcdcf3;
+}
+
+.bpd-table-item {
+  height: 50px;
+  font-weight: 500;
+  text-align: center;
+  background: #f6f6fc;
+}
+
+.bpdci-fourth {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-basis: 30%;
+}
+.active {
+  background: #687de8 !important;
+  color: white !important;
+}

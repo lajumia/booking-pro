@@ -1,0 +1,27 @@
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+const path = require('path');
+
+module.exports = {
+  ...defaultConfig, // Extend the default @wordpress/scripts config
+  entry: {
+    dashboard: './admin/views-react/dashboard.jsx',   // Entry point for the Dashboard page
+    calender: './admin/views-react/calender.jsx',     // Entry point for the Calendar page
+    appointments: './admin/views-react/appointments.jsx', // Entry point for Appoinments page
+    services: './admin/views-react/services.jsx', // Entry point for Services
+    staff: './admin/views-react/staff.jsx', // Entry point for Staff
+    customers: './admin/views-react/customers.jsx', // Entry point for Customers
+    notifications: './admin/views-react/notifications.jsx', // Entry point for Notifications
+    addons: './admin/views-react/addons.jsx', // Entry point for Addons
+    settings: './admin/views-react/settings.jsx', // Entry point for Settings
+    
+  },
+  output: {
+    path: path.resolve(__dirname, 'admin/views'),
+    filename: '[name].js',  // This will output dashboard.js, calendar.js, appointments.js, etc.
+  },
+  
+  
+
+
+}
+
