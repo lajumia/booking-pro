@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import HashLoader from "react-spinners/HashLoader";
 
 import Header from "./components/Header";
+import noDataImg from "../assets/images/no-data.png";
 
 const Staff = () => {
   const pageURL = bookingProStaff.staffPageUrl;
@@ -139,6 +140,7 @@ const Staff = () => {
     setCurrentPage(1);
   };
   const fetchStaff = () => {
+    setLoading(true); // Start loading before fetching
     fetch(
       `${bookingProStaff.api_base_url}get-staff?page=${currentPage}&limit=${itemsPerPage}&search=${searchQuery}`,
       {
@@ -164,6 +166,7 @@ const Staff = () => {
         } else {
           setStaffData([]);
         }
+        setLoading(false);
       })
       .catch((error) => {
         toast.error(error);
@@ -334,6 +337,20 @@ const Staff = () => {
                   </tbody>
                 )}
               </table>
+              {staffData.length === 0 && !loading && (
+                <div className="bp-ser-no-data">
+                  <img src={noDataImg} alt="No Data" />
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <p className="no-data">No Staff found</p>
+                    <input
+                      className="add-staff"
+                      onClick={openPopup}
+                      type="button"
+                      value="Add New Staff"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Pagination Controls Start show pagination if customers more than 10*/}

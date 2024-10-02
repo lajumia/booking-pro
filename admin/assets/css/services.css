@@ -1,15 +1,15 @@
 /* Header and content area start here */
-#bp-staff-root {
+#bp-services-root {
   width: 97%;
   margin: auto;
   height: 900px;
   background: #ededf5;
 }
 
-.bp-staff-container {
+.bp-service-container {
   height: 100%;
 }
-.bp-staff-content {
+.bp-ser-content {
   width: 93.5%;
   margin: auto;
   height: 84%;
@@ -18,22 +18,17 @@
   padding: 30px 20px;
   margin-top: 30px;
 }
-.bp-staff-cont-inner {
+.bp-ser-cont-inner {
   height: 100%;
 }
-.bpsci-top {
+.bp-ser-ci-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
 }
-input.staff-search {
-  padding: 5px 8px;
-  width: 40%;
-  border: 1px solid #687de84a;
-  border-radius: 20px;
-}
-.add-staff {
+
+.add-service {
   background: #687de8;
   border: none;
   color: white;
@@ -42,21 +37,21 @@ input.staff-search {
   font-weight: 500;
   cursor: pointer;
 }
-.bpsci-second {
+.bp-ser-ci-second {
   position: relative;
   height: 600px;
 }
-.bps-table-head {
+.bp-ser-table-head {
   height: 60px;
   background: #dcdcf3;
 }
-.bps-table-item {
+.bp-ser-table-item {
   height: 50px;
   font-weight: 500;
   text-align: center;
   background: #f6f6fc;
 }
-tr.bps-table-item:hover {
+tr.bp-ser-table-item:hover {
   background: #dcdcf3cc;
   transition: 0.2s;
 }
@@ -90,70 +85,21 @@ span.dashicons.dashicons-edit:hover {
   background: #687de8 !important;
   color: white !important;
 }
-
-/* Popup start */
-.staff-heading {
-  text-align: center;
-  padding: 20px 20px;
-  margin-top: 0px;
-  font-size: 21px;
-}
-.staff-form-inner {
-  max-width: 500px;
-}
-.staff-first {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 0px;
-}
-.staff-second {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 0px;
-}
-.staff-sub {
-  padding: 7px 30px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  margin-top: 50px;
-  margin-right: 20px;
+span.status-active {
+  padding: 5px 10px;
   background: #687de8;
+  border-radius: 20px;
   color: white;
-  cursor: pointer;
+  text-transform: capitalize;
 }
-.staff-can {
-  padding: 7px 30px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  margin-top: 50px;
-  color: #687de8;
-  cursor: pointer;
-}
-.staff-first input {
+span.status-inactive {
   padding: 5px 10px;
+  background: #ffc107;
   border-radius: 20px;
-  width: 45%;
+  color: black;
+  text-transform: capitalize;
 }
-.staff-second input {
-  padding: 5px 10px;
-  border-radius: 20px;
-  width: 45%;
-}
-.up-profle {
-  padding: 8px 10px !important;
-  cursor: pointer;
-  border: 1px solid #8c8f94 !important;
-  border-radius: 20px !important;
-  width: 45% !important;
-  margin: 15px 0px;
-}
-/* Popup finished */
-
-.staff-pagination {
+.service-pagination {
   height: 100px;
 }
 .pagi-active {
@@ -175,20 +121,99 @@ span.dashicons.dashicons-edit:hover {
   font-weight: 500;
   cursor: pointer;
 }
-span.status-active {
-  padding: 5px 10px;
+
+/* Popup start here */
+.service-heading {
+  text-align: center;
+  padding: 20px 20px;
+  margin-top: 0px;
+  font-size: 21px;
+}
+.service-form-inner {
+  max-width: 500px;
+}
+.service-first {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.service-second {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.service-sub {
+  padding: 7px 30px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  margin-top: 50px;
+  margin-right: 20px;
   background: #687de8;
-  border-radius: 20px;
   color: white;
-  text-transform: capitalize;
+  cursor: pointer;
 }
-span.status-inactive {
+.service-can {
+  padding: 7px 30px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  margin-top: 50px;
+  color: #687de8;
+  cursor: pointer;
+}
+.service-first input {
   padding: 5px 10px;
-  background: #ffc107;
-  border-radius: 20px;
-  color: black;
-  text-transform: capitalize;
+  border-radius: 5px;
+  width: 33%;
+  margin-left: 5px;
 }
+.service-second textarea {
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+}
+.service-up-first {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.service-up-second {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.service-up-third {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.service-up-first input {
+  padding: 5px 10px;
+  border-radius: 20px;
+  width: 47%;
+  margin-left: 5px;
+}
+.service-up-second input {
+  padding: 5px 10px;
+  border-radius: 20px;
+  width: 47%;
+  margin-left: 5px;
+}
+.service-up-second select {
+  padding: 5px 10px;
+  border-radius: 20px;
+  width: 47%;
+  margin-left: 5px;
+}
+.service-up-third textarea {
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+}
+/* Popup finished here */
 .bp-ser-no-data img {
   margin: auto;
   width: 300px;

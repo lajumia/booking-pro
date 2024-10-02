@@ -3,21 +3,34 @@
 class BP_Admin
 {
     // Construct for hook start
-        public function __construct(){
-            add_action('init',[$this,'bp_user_set_role']);
+        public function __construct() {
+            add_action('init', [$this, 'bp_user_set_role']);
             add_action('admin_menu', [$this, 'bp_admin_menu_register']);
-            add_action('admin_enqueue_scripts',[$this, 'bp_admin_enqueue_scripts']);
-            add_action('rest_api_init',[$this,'bp_register_rest_routes_create_customer']);
-            add_action('rest_api_init',[$this,'bp_register_rest_routes_get_all_customer']);
-            add_action('rest_api_init', [$this, 'bp_register_rest_routes_delete_customer']);
-            add_action('rest_api_init', [$this, 'bp_register_rest_routes_create_staff']);   
-            add_action('rest_api_init',[$this,'bp_register_rest_routes_get_staff']);
-            add_action('rest_api_init', [$this, 'bp_register_rest_routes_delete_staff']); 
-            add_action('rest_api_init', [$this, 'bp_register_rest_routes_update_staff']);    
-            
-            
+            add_action('admin_enqueue_scripts', [$this, 'bp_admin_enqueue_scripts']);
+            add_action('rest_api_init', [$this, 'bp_register_rest_routes']);
+        }
+        
+        // Register all REST API routes in one function
+        public function bp_register_rest_routes() {
+            // Customer routes
+            $this->bp_register_rest_routes_create_customer();
+            $this->bp_register_rest_routes_get_all_customer();
+            $this->bp_register_rest_routes_delete_customer();
+        
+            // Staff routes
+            $this->bp_register_rest_routes_create_staff();
+            $this->bp_register_rest_routes_get_staff();
+            $this->bp_register_rest_routes_delete_staff();
+            $this->bp_register_rest_routes_update_staff();
+        
+            // Service routes
+            $this->bp_register_rest_routes_create_service();
+            $this->bp_register_rest_routes_get_services();
+            $this->bp_register_rest_routes_delete_service();
+            $this->bp_register_rest_routes_update_service();
         }
     //Construct for hook end
+
 
     //Set all user role to bp_user start 
         public function bp_user_set_role(){
@@ -30,32 +43,33 @@ class BP_Admin
         }
     //Set all user role to bp_user end
 
+
     // Register admin menu and print root element start
         public function bp_admin_menu_register(){
             $icon_url = BP_DIR_URL . 'admin/assets/images/bp-admin-logo.png';
-            add_menu_page('Booking Pro', 'Booking Pro', 'manage_options', 'bp', [$this, 'bp_dashboard_page'], $icon_url, 20);
-            add_submenu_page('bp', 'Dashboard', 'Dashboard', 'manage_options', 'bp-dashboard', [$this, 'bp_dashboard_page']);
-            add_submenu_page('bp', 'Calender', 'Calender', 'manage_options', 'bp-calender', [$this, 'bp_calender_page']);
-            add_submenu_page('bp', 'Appointments', 'Appointments', 'manage_options', 'bp-appointments', [$this, 'bp_appointments_page']);
-            add_submenu_page('bp', 'Services', 'Services', 'manage_options', 'bp-services', [$this, 'bp_services_page']);
-            add_submenu_page('bp', 'Staff', 'Staff', 'manage_options', 'bp-staff', [$this, 'bp_staff_page']);
-            add_submenu_page('bp', 'Customers', 'Customers', 'manage_options', 'bp-customers', [$this, 'bp_customers_page']);
-            add_submenu_page('bp', 'Notifications', 'Notifications', 'manage_options', 'bp-notifications', [$this, 'bp_notifications_page']);
-            add_submenu_page('bp', 'Add-ons', 'Add-ons', 'manage_options', 'bp-addons', [$this, 'bp_addons_page']);
-            add_submenu_page('bp', 'Settings', 'Settings', 'manage_options', 'bp-settings', [$this, 'bp_settings_page']);
-
+            add_menu_page('Booking Pro', 'Booking Pro', 'manage_options', 'bp', [$this, 'bp_render_page'], $icon_url, 20);
+            $submenus = [
+                ['Dashboard', 'bp-dashboard'],
+                ['Calender', 'bp-calender'],
+                ['Appointments', 'bp-appointments'],
+                ['Services', 'bp-services'],
+                ['Staff', 'bp-staff'],
+                ['Customers', 'bp-customers'],
+                ['Notifications', 'bp-notifications'],
+                ['Add-ons', 'bp-addons'],
+                ['Settings', 'bp-settings']
+            ];
+            foreach ($submenus as $submenu) {
+                add_submenu_page('bp', $submenu[0], $submenu[0], 'manage_options', $submenu[1], [$this, 'bp_render_page']);
+            }
             remove_submenu_page('bp', 'bp');
         }
-
-        public function bp_dashboard_page(){echo '<div id="bp-dashboard-root"></div>';}
-        public function bp_calender_page(){echo '<div id="bp-calender-root"></div>';}
-        public function bp_appointments_page(){echo '<div id="bp-appointments-root"></div>';}
-        public function bp_services_page(){echo '<div id="bp-services-root"></div>';}
-        public function bp_staff_page(){echo '<div id="bp-staff-root"></div>';}
-        public function bp_customers_page(){echo '<div id="bp-customers-root"></div>';}
-        public function bp_notifications_page(){echo '<div id="bp-notifications-root"></div>';}
-        public function bp_addons_page(){echo '<div id="bp-addons-root"></div>';}
-        public function bp_settings_page(){echo '<div id="bp-settings-root"></div>';}
+    
+        public function bp_render_page() {
+            $current_page = $_GET['page'];
+            // Dynamically render the appropriate root div based on the slug
+            echo '<div id="' . esc_attr($current_page) . '-root"></div>';
+        }
     // Register admin menu and print root element end    
 
 
@@ -69,6 +83,7 @@ class BP_Admin
                 wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $dash_dep['version']);            
             
             }elseif($hook == 'booking-pro_page_bp-appointments'){
+
                 $app_dep = require_once('views/appointments.asset.php');
                 wp_enqueue_script('bp-appointments', BP_DIR_URL . 'admin/views/appointments.js', $app_dep['dependencies'], $app_dep['version'], true);
 
@@ -84,7 +99,17 @@ class BP_Admin
 
                 $ser_dep = require_once('views/services.asset.php');
                 wp_enqueue_script('bp-services', BP_DIR_URL . 'admin/views/services.js', $ser_dep['dependencies'], $ser_dep['version'], true);
-            
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $ser_dep['version']);
+                wp_enqueue_style ('bp-services', BP_DIR_URL . 'admin/assets/css/services.css', [], $ser_dep['version']);
+                wp_enqueue_style ('bp-tostify', BP_DIR_URL.'admin/assets/css/ReactTostify.css', [], $ser_dep['version']);
+                
+                // Localize script to pass data to React app
+                wp_localize_script('bp-services', 'bookingProService', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'servicePageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);      
+                      
             }elseif($hook == 'booking-pro_page_bp-staff'){
 
                 $sta_dep = require_once('views/staff.asset.php');
@@ -92,6 +117,7 @@ class BP_Admin
                 wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $sta_dep['version']);
                 wp_enqueue_style('bp-staff', BP_DIR_URL . 'admin/assets/css/staff.css', [], $sta_dep['version']);
                 wp_enqueue_style ('bp-tostify', BP_DIR_URL.'admin/assets/css/ReactTostify.css',[],$sta_dep['version']);
+                
                 // Localize script to pass data to React app
                 wp_localize_script('bp-staff', 'bookingProStaff', [
                     'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
@@ -99,7 +125,6 @@ class BP_Admin
                     'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
                 ]);                
 
-            
             }elseif($hook == 'booking-pro_page_bp-customers'){
 
                 $cus_dep = require_once('views/customers.asset.php');
@@ -168,7 +193,6 @@ class BP_Admin
                 ], 403);
             }
             
-
             // Get form data
             $params = $request->get_file_params();
             $first_name = sanitize_text_field($request['first_name']);
@@ -739,7 +763,277 @@ class BP_Admin
             }
         }
             
-    //Register REST API routes for staff page start
+    //Register REST API routes for staff page end
+
+
+    // Register REST API routes for service page start
+        
+        //Create service
+        public function bp_register_rest_routes_create_service() {
+            register_rest_route('booking-pro/v1', '/create-service', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'bp_create_service_callback'],
+                'permission_callback' => '__return_true',
+            ]);
+        }
+        public function bp_create_service_callback( $request ) {
+                        // Check for the nonce
+            $nonce = $request->get_header('X-WP-Nonce');
+            if (!$nonce) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce not found in headers!',
+                ], 403);
+            }
+            if (!wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce Validation Failed!',
+                ], 403);
+            }
+
+            $service_name = sanitize_text_field($request['service_name']);
+            $service_description = sanitize_text_field($request['service_description']);
+            $service_price = floatval($request['service_price']);
+            $service_duration = intval($request['service_duration']);            
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_services';
+
+            $insert_date = $wpdb->insert(
+                $table_name,
+                array(
+                    'service_name' => $service_name,
+                    'description' => $service_description,
+                    'price' => $service_price,
+                    'duration' => $service_duration,
+                )
+            );
+
+            if($insert_date){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Service created successfully!',
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to create service!',
+                ], 500);
+            }
+        }
+
+        //Get services
+        public function bp_register_rest_routes_get_services() {
+            register_rest_route('booking-pro/v1', '/get-services', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_services_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'page' => [
+                        'required' => false,
+                        'default' => 1,
+                        'sanitize_callback' => 'absint', 
+                    ],
+                    'limit' => [
+                        'required' => false,
+                        'default' => 10,
+                        'sanitize_callback' => 'absint',
+                    ],
+                    
+                ],
+
+            ]);
+        }
+        public function bp_get_services_callback( $request ) {
+            // Check for the nonce
+            $nonce = $request->get_header('X-WP-Nonce');
+            if (!$nonce) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce not found in headers!',
+                ], 403);
+            }
+            if (!wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce Validation Failed!',
+                ], 403);
+            }
+
+            // Get pagination parameters from the request
+            $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+            $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 10;
+            $offset = ($page - 1) * $limit; 
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_services';
+            $sql = "SELECT * FROM $table_name";
+            $sql .= " LIMIT $limit OFFSET $offset";
+            $services = $wpdb->get_results($sql);
+            $total_services = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+            $total_pages = ceil($total_services / $limit);
+
+            if(!empty($services)){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $services,
+                    'total_pages' => $total_pages,
+                    'current_page' => $page,
+                    'total_services' => $total_services,
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No services found!',
+                    
+                ], 200);
+            }
+
+            
+        }
+
+        //Delete Service
+        public function bp_register_rest_routes_delete_service() {
+            register_rest_route('booking-pro/v1', '/delete-service/(?P<id>\d+)', [
+                'methods'  => 'DELETE',
+                'callback' => [$this, 'bp_delete_service_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'id' => [
+                        'required' => true,
+                        'sanitize_callback' => 'absint', // Ensures the value is a positive integer.
+                    ],
+                ],
+            ]);
+        }
+        public function bp_delete_service_callback( $request ) {
+            // Check for the nonce
+            $nonce = $request->get_header('X-WP-Nonce');
+
+            if (!$nonce) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce not found in headers!',
+                ], 403);
+            }
+
+            if (!wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce Validation Failed!',
+                ], 403);
+            }
+
+            $service_id = $request['id']; // Extract the service ID from the request
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_services';
+
+            // Check if service is exist in $table_name
+            $existing_service = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $service_id));
+            if(!$existing_service){
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Service not found!',
+                ], 404);
+            }
+
+            // Attempt to delete the service
+            $delete_service = $wpdb->delete(
+                $table_name,
+                array(
+                    'id' => $service_id,
+                )
+            );
+
+            if($delete_service){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Service deleted successfully!',
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to delete service!',
+                ], 500);
+            }
+        }
+
+        //Update Service
+        public function bp_register_rest_routes_update_service() {
+            register_rest_route('booking-pro/v1', '/update-service', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'bp_update_service_callback'],
+                'permission_callback' => '__return_true',
+                
+            ]);
+        }
+        public function bp_update_service_callback( $request ) {
+            // Check for the nonce
+            $nonce = $request->get_header('X-WP-Nonce');
+
+            if (!$nonce) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce not found in headers!',
+                ], 403);
+            }
+
+            if (!wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce Validation Failed!',
+                ], 403);
+            }
+
+            $service_id = intval($request['service_id']); // Extract the service ID from the request
+            $service_name = sanitize_text_field($request['service_name']);
+            $service_description = sanitize_text_field($request['service_description']);
+            $service_price = floatval($request['service_price']);
+            $service_duration = intval($request['service_duration']);
+            $service_status = sanitize_text_field($request['service_status']);
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_services';
+
+            // Check if service is exist in $table_name
+            $existing_service = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $service_id));
+            if(!$existing_service){
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Service not found!',
+                ], 404);
+            }
+
+            // Update data into the database
+            $update_service = $wpdb->update(
+                $table_name,
+                array(
+                    'service_name' => $service_name,
+                    'description' => $service_description,
+                    'price' => $service_price,
+                    'duration' => $service_duration,
+                    'status'=> $service_status,
+                ),
+                array(
+                    'id' => $service_id,
+                )
+            );
+
+            if($update_service){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Service updated successfully!',
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to update service!',
+                ], 500);
+            }
+        }
+    // Register REST API routes for service page end
 
 
 

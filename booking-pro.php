@@ -15,30 +15,31 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('BP_VERSION', '1.0.0');
-define('BP_DIR_PATH', plugin_dir_path(__FILE__));
-define('BP_DIR_URL', plugin_dir_url(__FILE__));
+class Booking_Pro {
 
-// Activation and deactivation hooks
-require_once BP_DIR_PATH . 'includes/class-bp-activator.php';
-register_activation_hook(__FILE__, ['BP_Activator', 'bp_activate']);
+    public function __construct() {
+        $this->define_constants();
+        add_action('init', [$this, 'bp_load_require_files_for_admin']);
+        register_activation_hook(__FILE__, [$this, 'bp_activate']);
+    }
 
+    // Define constants
+    private function define_constants() {
+        define('BP_VERSION', '1.0.0');
+        define('BP_DIR_PATH', plugin_dir_path(__FILE__));
+        define('BP_DIR_URL', plugin_dir_url(__FILE__));
+    }
 
-
-
-
-class Booking_Pro{
-
-    public function __construct(){
-        add_action('init',[$this,'bp_load_require_files']);
-        
-    }   
-
-    public function bp_load_require_files(){
+    // Load required files for admin
+    public function bp_load_require_files_for_admin() {
         require_once BP_DIR_PATH . 'admin/class-bp-admin.php';
     }
-    
 
-    
+    // Activation hook callback
+    public function bp_activate() {
+        require_once BP_DIR_PATH . 'includes/class-bp-activator.php';
+        BP_Activator::bp_activate();
+    }
 }
+
 new Booking_Pro();

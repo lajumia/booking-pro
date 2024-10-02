@@ -703,17 +703,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Customers = () => {
-  // Page URL
+  //Page URL
   const pageURL = bookingProNonce.customersPageUrl;
-  // State for loading
+
+  //State function for loading start
   const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const overrideCss = {
     position: "absolute",
     top: "50%",
     left: "45%"
   };
+  //State function for loading end
 
-  // State and function for popup
+  //State and function for popup start
   const [isOpen, setIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
   const openPopup = () => {
     setIsOpen(true);
@@ -721,8 +723,9 @@ const Customers = () => {
   const closePopup = () => {
     setIsOpen(false);
   };
+  //State and function for popup end
 
-  // Simple CSS styles for the pop-up
+  //Simple CSS styles for the pop-up start
   const popupStyles = {
     overlay: {
       position: "fixed",
@@ -744,8 +747,9 @@ const Customers = () => {
       width: "100%"
     }
   };
+  //Simple CSS styles for the pop-up end
 
-  // State and function to handle add new customer
+  //State and function to handle add new customer start
   const [formData, setFormData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     first_name: "",
     last_name: "",
@@ -809,8 +813,9 @@ const Customers = () => {
       react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
     }
   };
+  //State and function to handle add new customer end
 
-  // State and function to Get All BP Customer
+  //State and function to Get All BP Customer start
   const [customers, setCustomers] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [currentPage, setCurrentPage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1); // Initialize currentPage to 1
   const [totalPages, setTotalPages] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
@@ -841,34 +846,35 @@ const Customers = () => {
       if (result) {
         setCustomers(result);
         setTotalPages(data.total_pages);
-        setCurrentPage(data.current_page); // Ensure currentPage is updated
+        setCurrentPage(data.current_page);
       } else {
         setError("Error fetching users");
       }
-      setLoading(false); // Stop loading after fetching
+      setLoading(false);
     }).catch(error => {
       console.error("Fetch error:", error);
       setError("Error fetching users");
-      setLoading(false); // Stop loading if there's an error
+      setLoading(false);
     });
   };
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    fetchUsers(); // Call the fetch function on component mount and state changes
-  }, [currentPage, refreshKey, searchQuery]); // Add currentPage and refreshKey as dependencies
+    fetchUsers();
+  }, [currentPage, refreshKey, searchQuery]);
+  //State and function to Get All BP Customer end
 
   // Function to handle page change
   const handlePageChange = page => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page); // Update the current page
+      setCurrentPage(page);
     }
   };
   // Function to handle search input
   const handleSearch = e => {
-    setSearchQuery(e.target.value); // Update search query
-    setCurrentPage(1); // Reset to first page when searching
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
   };
 
-  // State and functon to delete customer
+  // State and functon to delete customer start
   const handleDelete = async id => {
     const confirmDelete = window.confirm("Are you sure you want to delete this customer?");
     if (confirmDelete) {
@@ -897,6 +903,8 @@ const Customers = () => {
       }
     }
   };
+  // State and functon to delete customer end
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.Fragment, {
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
       className: "bp-cus-container",

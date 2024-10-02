@@ -112,7 +112,7 @@ class BP_Activator {
         dbDelta($sql_notifications);
 
 
-         // Create custom role "BP User"
+        // Create custom role "BP User"
         add_role('bp_user', 'BP User', [
             'read' => true,
             'edit_posts' => false,
