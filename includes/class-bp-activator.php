@@ -11,6 +11,7 @@ class BP_Activator {
         $bp_appointments = $wpdb->prefix . 'bp_appointments';
         $bp_payments = $wpdb->prefix . 'bp_payments';
         $bp_notifications = $wpdb->prefix . 'bp_notifications';
+        $bp_appointment_time_slot = $wpdb->prefix . 'bp_appointment_time_slot';
 
         $charset_collate = $wpdb->get_charset_collate();
 
@@ -62,13 +63,19 @@ class BP_Activator {
             `staff_id` BIGINT(20) UNSIGNED DEFAULT NULL,
             `service_id` BIGINT(20) UNSIGNED DEFAULT NULL,
             `appointment_date` DATETIME NOT NULL,
-            `status` ENUM('pending', 'confirmed', 'completed', 'canceled') DEFAULT 'pending',
-            `payment_status` ENUM('paid', 'unpaid') DEFAULT 'unpaid',
+            `appointment_time_slot` VARCHAR(255) NOT NULL,
+            `status` ENUM('booked', 'confirmed', 'completed', 'canceled') DEFAULT 'booked',
             `notes` TEXT DEFAULT NULL,
             `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
             `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (`id`)
-            
+            PRIMARY KEY (`id`),
+            KEY `customer_id` (`customer_id`),
+            KEY `staff_id` (`staff_id`),
+            KEY `service_id` (`service_id`),
+            CONSTRAINT `fk_customer` FOREIGN KEY (`customer_id`) REFERENCES `wp_users` (`ID`) ON DELETE CASCADE,
+            CONSTRAINT `fk_staff` FOREIGN KEY (`staff_id`) REFERENCES `{$bp_staff}` (`id`) ON DELETE SET NULL,
+            CONSTRAINT `fk_service` FOREIGN KEY (`service_id`) REFERENCES `{$bp_services}` (`id`) ON DELETE SET NULL,
+            CONSTRAINT `fk_time_slot` FOREIGN KEY (`appointment_time_slot`) REFERENCES `{$bp_appointment_time_slot}` (`slot_time`) ON DELETE SET NULL          
         ) $charset_collate;";
 
         // SQL query to create the bp_payments table
@@ -100,6 +107,18 @@ class BP_Activator {
             KEY `user_id` (`user_id`)
         ) $charset_collate;";
 
+        // Sql query to create the bp_appointment_time_slot table
+        $sql_appointment_time_slot = "CREATE TABLE IF NOT EXISTS `{$bp_appointment_time_slot}` (
+            `id` BIGINT(20) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `slot_time` VARCHAR(50) NOT NULL, -- e.g., '9:00 AM - 10:00 AM'
+            `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+           
+        ) $charset_collate;";
+        
+
+
+
         // Include the required file for dbDelta()
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -107,9 +126,36 @@ class BP_Activator {
         dbDelta($sql_customers);
         dbDelta($sql_staff);
         dbDelta($sql_services);
+        dbDelta($sql_appointment_time_slot);
         dbDelta($sql_appointments);
         dbDelta($sql_payments); 
         dbDelta($sql_notifications);
+        
+
+        // Insert slot time into appointment time slot table
+        $slot_times = [
+            '9:00 AM - 10:00 AM',
+            '10:00 AM - 11:00 AM',
+            '11:00 AM - 12:00 PM',
+            '12:00 PM - 1:00 PM',
+            '1:00 PM - 2:00 PM',
+            '2:00 PM - 3:00 PM',
+            '3:00 PM - 4:00 PM',
+            '4:00 PM - 5:00 PM',
+            '5:00 PM - 6:00 PM',
+            '6:00 PM - 7:00 PM',
+            '7:00 PM - 8:00 PM',
+            '8:00 PM - 9:00 PM'
+        ];
+        //insert slots time into the table
+        foreach ($slot_times as $slot_time) {
+            $wpdb->insert(
+                $bp_appointment_time_slot,
+                array(
+                    'slot_time' => $slot_time
+                )
+            );
+        }
 
 
         // Create custom role "BP User"

@@ -20,6 +20,7 @@ class Booking_Pro {
     public function __construct() {
         $this->define_constants();
         add_action('init', [$this, 'bp_load_require_files_for_admin']);
+        add_action('init', [$this, 'bp_load_require_files_for_public']);
         register_activation_hook(__FILE__, [$this, 'bp_activate']);
     }
 
@@ -33,6 +34,11 @@ class Booking_Pro {
     // Load required files for admin
     public function bp_load_require_files_for_admin() {
         require_once BP_DIR_PATH . 'admin/class-bp-admin.php';
+    }
+
+    // Load required files for public
+    public function bp_load_require_files_for_public() {
+        require_once BP_DIR_PATH . 'public/class-bp-public.php';
     }
 
     // Activation hook callback

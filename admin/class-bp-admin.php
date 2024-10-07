@@ -86,6 +86,16 @@ class BP_Admin
 
                 $app_dep = require_once('views/appointments.asset.php');
                 wp_enqueue_script('bp-appointments', BP_DIR_URL . 'admin/views/appointments.js', $app_dep['dependencies'], $app_dep['version'], true);
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $app_dep['version']);
+                wp_enqueue_style ('bp-appointments', BP_DIR_URL . 'admin/assets/css/appointments.css', [], $app_dep['version']);
+                wp_enqueue_style ('bp-tostify', BP_DIR_URL.'admin/assets/css/ReactTostify.css', [], $app_dep['version']);
+                
+                // Localize script to pass data to React app
+                wp_localize_script('bp-appointments', 'bookingProAppointment', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'appointmentPageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);
 
             }elseif($hook == 'booking-pro_page_bp-calender'){
 
