@@ -140,6 +140,279 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/react-spinners/HashLoader.js":
+/*!***************************************************!*\
+  !*** ./node_modules/react-spinners/HashLoader.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var React = __importStar(__webpack_require__(/*! react */ "react"));
+var colors_1 = __webpack_require__(/*! ./helpers/colors */ "./node_modules/react-spinners/helpers/colors.js");
+var unitConverter_1 = __webpack_require__(/*! ./helpers/unitConverter */ "./node_modules/react-spinners/helpers/unitConverter.js");
+var animation_1 = __webpack_require__(/*! ./helpers/animation */ "./node_modules/react-spinners/helpers/animation.js");
+function HashLoader(_a) {
+    var _b = _a.loading, loading = _b === void 0 ? true : _b, _c = _a.color, color = _c === void 0 ? "#000000" : _c, _d = _a.speedMultiplier, speedMultiplier = _d === void 0 ? 1 : _d, _e = _a.cssOverride, cssOverride = _e === void 0 ? {} : _e, _f = _a.size, size = _f === void 0 ? 50 : _f, additionalprops = __rest(_a, ["loading", "color", "speedMultiplier", "cssOverride", "size"]);
+    var _g = (0, unitConverter_1.parseLengthAndUnit)(size), value = _g.value, unit = _g.unit;
+    var wrapper = __assign({ display: "inherit", position: "relative", width: (0, unitConverter_1.cssValue)(size), height: (0, unitConverter_1.cssValue)(size), transform: "rotate(165deg)" }, cssOverride);
+    var thickness = value / 5;
+    var lat = (value - thickness) / 2;
+    var offset = lat - thickness;
+    var colorValue = (0, colors_1.calculateRgba)(color, 0.75);
+    var before = (0, animation_1.createAnimation)("HashLoader", "0% {width: ".concat(thickness, "px; box-shadow: ").concat(lat, "px ").concat(-offset, "px ").concat(colorValue, ", ").concat(-lat, "px ").concat(offset, "px ").concat(colorValue, "}\n    35% {width: ").concat((0, unitConverter_1.cssValue)(size), "; box-shadow: 0 ").concat(-offset, "px ").concat(colorValue, ", 0 ").concat(offset, "px ").concat(colorValue, "}\n    70% {width: ").concat(thickness, "px; box-shadow: ").concat(-lat, "px ").concat(-offset, "px ").concat(colorValue, ", ").concat(lat, "px ").concat(offset, "px ").concat(colorValue, "}\n    100% {box-shadow: ").concat(lat, "px ").concat(-offset, "px ").concat(colorValue, ", ").concat(-lat, "px ").concat(offset, "px ").concat(colorValue, "}"), "before");
+    var after = (0, animation_1.createAnimation)("HashLoader", "0% {height: ".concat(thickness, "px; box-shadow: ").concat(offset, "px ").concat(lat, "px ").concat(color, ", ").concat(-offset, "px ").concat(-lat, "px ").concat(color, "}\n    35% {height: ").concat((0, unitConverter_1.cssValue)(size), "; box-shadow: ").concat(offset, "px 0 ").concat(color, ", ").concat(-offset, "px 0 ").concat(color, "}\n    70% {height: ").concat(thickness, "px; box-shadow: ").concat(offset, "px ").concat(-lat, "px ").concat(color, ", ").concat(-offset, "px ").concat(lat, "px ").concat(color, "}\n    100% {box-shadow: ").concat(offset, "px ").concat(lat, "px ").concat(color, ", ").concat(-offset, "px ").concat(-lat, "px ").concat(color, "}"), "after");
+    var style = function (i) {
+        return {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            display: "block",
+            width: "".concat(value / 5).concat(unit),
+            height: "".concat(value / 5).concat(unit),
+            borderRadius: "".concat(value / 10).concat(unit),
+            transform: "translate(-50%, -50%)",
+            animationFillMode: "none",
+            animation: "".concat(i === 1 ? before : after, " ").concat(2 / speedMultiplier, "s infinite"),
+        };
+    };
+    if (!loading) {
+        return null;
+    }
+    return (React.createElement("span", __assign({ style: wrapper }, additionalprops),
+        React.createElement("span", { style: style(1) }),
+        React.createElement("span", { style: style(2) })));
+}
+exports["default"] = HashLoader;
+
+
+/***/ }),
+
+/***/ "./node_modules/react-spinners/helpers/animation.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/react-spinners/helpers/animation.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createAnimation = void 0;
+var createAnimation = function (loaderName, frames, suffix) {
+    var animationName = "react-spinners-".concat(loaderName, "-").concat(suffix);
+    if (typeof window == "undefined" || !window.document) {
+        return animationName;
+    }
+    var styleEl = document.createElement("style");
+    document.head.appendChild(styleEl);
+    var styleSheet = styleEl.sheet;
+    var keyFrames = "\n    @keyframes ".concat(animationName, " {\n      ").concat(frames, "\n    }\n  ");
+    if (styleSheet) {
+        styleSheet.insertRule(keyFrames, 0);
+    }
+    return animationName;
+};
+exports.createAnimation = createAnimation;
+
+
+/***/ }),
+
+/***/ "./node_modules/react-spinners/helpers/colors.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/react-spinners/helpers/colors.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.calculateRgba = void 0;
+var BasicColors;
+(function (BasicColors) {
+    BasicColors["maroon"] = "#800000";
+    BasicColors["red"] = "#FF0000";
+    BasicColors["orange"] = "#FFA500";
+    BasicColors["yellow"] = "#FFFF00";
+    BasicColors["olive"] = "#808000";
+    BasicColors["green"] = "#008000";
+    BasicColors["purple"] = "#800080";
+    BasicColors["fuchsia"] = "#FF00FF";
+    BasicColors["lime"] = "#00FF00";
+    BasicColors["teal"] = "#008080";
+    BasicColors["aqua"] = "#00FFFF";
+    BasicColors["blue"] = "#0000FF";
+    BasicColors["navy"] = "#000080";
+    BasicColors["black"] = "#000000";
+    BasicColors["gray"] = "#808080";
+    BasicColors["silver"] = "#C0C0C0";
+    BasicColors["white"] = "#FFFFFF";
+})(BasicColors || (BasicColors = {}));
+var handleRgbColorString = function (color, opacity) {
+    // rgb(a)(255 255 255 / 80%)
+    if (color.includes("/")) {
+        return color.replace("rgb(", "rgba(");
+    }
+    var rgbValues = color.substring(color.startsWith("rgba(") ? 5 : 4, color.length - 1).trim();
+    var splittedByCommas = rgbValues.split(",");
+    // rgb(a)(255, 255, 255, 0.8)
+    if (splittedByCommas.length === 4) {
+        return color.replace("rgb(", "rgba(");
+    }
+    // rgb(a)(255, 255, 255)
+    if (splittedByCommas.length === 3) {
+        return "rgba(".concat(rgbValues, ", ").concat(opacity, ")");
+    }
+    // rgb(a)(255 255 255)
+    return "rgba(".concat(rgbValues, " / ").concat(opacity, ")");
+};
+var calculateRgba = function (color, opacity) {
+    if (color.startsWith("rgb")) {
+        return handleRgbColorString(color, opacity);
+    }
+    if (Object.keys(BasicColors).includes(color)) {
+        color = BasicColors[color];
+    }
+    if (color[0] === "#") {
+        color = color.slice(1);
+    }
+    if (color.length === 3) {
+        var res_1 = "";
+        color.split("").forEach(function (c) {
+            res_1 += c;
+            res_1 += c;
+        });
+        color = res_1;
+    }
+    var rgbValues = (color.match(/.{2}/g) || []).map(function (hex) { return parseInt(hex, 16); }).join(", ");
+    return "rgba(".concat(rgbValues, ", ").concat(opacity, ")");
+};
+exports.calculateRgba = calculateRgba;
+
+
+/***/ }),
+
+/***/ "./node_modules/react-spinners/helpers/unitConverter.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/react-spinners/helpers/unitConverter.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.cssValue = exports.parseLengthAndUnit = void 0;
+var cssUnit = {
+    cm: true,
+    mm: true,
+    in: true,
+    px: true,
+    pt: true,
+    pc: true,
+    em: true,
+    ex: true,
+    ch: true,
+    rem: true,
+    vw: true,
+    vh: true,
+    vmin: true,
+    vmax: true,
+    "%": true,
+};
+/**
+ * If size is a number, append px to the value as default unit.
+ * If size is a string, validate against list of valid units.
+ * If unit is valid, return size as is.
+ * If unit is invalid, console warn issue, replace with px as the unit.
+ *
+ * @param {(number | string)} size
+ * @return {LengthObject} LengthObject
+ */
+function parseLengthAndUnit(size) {
+    if (typeof size === "number") {
+        return {
+            value: size,
+            unit: "px",
+        };
+    }
+    var value;
+    var valueString = (size.match(/^[0-9.]*/) || "").toString();
+    if (valueString.includes(".")) {
+        value = parseFloat(valueString);
+    }
+    else {
+        value = parseInt(valueString, 10);
+    }
+    var unit = (size.match(/[^0-9]*$/) || "").toString();
+    if (cssUnit[unit]) {
+        return {
+            value: value,
+            unit: unit,
+        };
+    }
+    console.warn("React Spinners: ".concat(size, " is not a valid css value. Defaulting to ").concat(value, "px."));
+    return {
+        value: value,
+        unit: "px",
+    };
+}
+exports.parseLengthAndUnit = parseLengthAndUnit;
+/**
+ * Take value as an input and return valid css value
+ *
+ * @param {(number | string)} value
+ * @return {string} valid css value
+ */
+function cssValue(value) {
+    var lengthWithunit = parseLengthAndUnit(value);
+    return "".concat(lengthWithunit.value).concat(lengthWithunit.unit);
+}
+exports.cssValue = cssValue;
+
+
+/***/ }),
+
 /***/ "./admin/assets/images/addons.png":
 /*!****************************************!*\
   !*** ./admin/assets/images/addons.png ***!
@@ -324,7 +597,7 @@ function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else i
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -416,6 +689,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
 /* harmony import */ var react_toastify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-toastify */ "./node_modules/react-toastify/dist/react-toastify.esm.mjs");
+/* harmony import */ var react_spinners_HashLoader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-spinners/HashLoader */ "./node_modules/react-spinners/HashLoader.js");
+/* harmony import */ var react_spinners_HashLoader__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_spinners_HashLoader__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _components_Header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Header */ "./admin/views-react/components/Header.jsx");
 /* harmony import */ var _assets_images_no_data_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/images/no-data.png */ "./admin/assets/images/no-data.png");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
@@ -429,6 +704,249 @@ __webpack_require__.r(__webpack_exports__);
 
 const Appointments = () => {
   const pageURL = bookingProAppointment.appointmentPageUrl;
+  const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+  const [isUpOpen, setIsUpOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [appointmentId, setAppointmentId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+  const [deleteId, setDeleteId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+  const [refreshKey, setRefreshKey] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+  const overrideCss = {
+    position: "absolute",
+    top: "50%",
+    left: "45%"
+  };
+  const popupStyles = {
+    overlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000
+    },
+    popup: {
+      backgroundColor: "white",
+      padding: "20px 20px",
+      borderRadius: "15px",
+      maxWidth: "400px",
+      width: "100%"
+    }
+  };
+  const openPopup = e => {
+    setAppointmentId(e.target.dataset.id);
+    setIsUpOpen(true);
+  };
+  const closePopup = () => {
+    setIsUpOpen(false);
+  };
+
+  // Delete appointment start
+  const handleDeleteAppointment = async id => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this appointment?");
+    if (confirmDelete) {
+      try {
+        const response = await fetch(`${bookingProAppointment.api_base_url}delete-appointment?id=${id}`,
+        // Adjust the API URL accordingly
+        {
+          method: "POST",
+          headers: {
+            "X-WP-Nonce": bookingProAppointment.nonce // Adjust for appointments if needed
+          }
+        });
+        const result = await response.json();
+        if (response.ok) {
+          react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.success(result.message);
+          setRefreshKey(oldKey => oldKey + 1); // Refresh data after successful delete
+          setCurrentPage(1);
+        } else {
+          react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(result.message);
+        }
+      } catch (error) {
+        react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error.message);
+      }
+    }
+  };
+  // Delete appointment end
+
+  // State and function for appointments start
+  const [services, setServices] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [staffs, setStaffs] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [timeSlots, setTimeSlots] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [appointments, setAppointments] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [currentPage, setCurrentPage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1);
+  const [itemsPerPage, setItemsPerPage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(10);
+  const [searchQuery, setSearchQuery] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [totalPages, setTotalPages] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+  const [expandedRow, setExpandedRow] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  const handleSearch = e => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+  const [formData, setFormData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+    app_status: 'scheduled'
+  });
+  const handleStatusChange = e => {
+    const {
+      value
+    } = e.target;
+    setFormData({
+      ...formData,
+      app_status: value
+    });
+  };
+  // State and function for appointments end
+
+  // Function to toggle expanded row start
+  const toggleRow = index => {
+    setExpandedRow(expandedRow === index ? null : index); // Toggle the row's expansion
+  };
+  // Function to toggle expanded row end
+
+  // Fetch appointment status start
+  const changeStatus = e => {
+    e.preventDefault();
+    closePopup(false);
+    const formDataObj = new FormData();
+    formDataObj.append("appointment_status", formData.app_status); // Use the updated state value
+    formDataObj.append("appointment_id", appointmentId);
+    fetch(`${bookingProAppointment.api_base_url}update-appointment-status`, {
+      method: "POST",
+      headers: {
+        "X-WP-Nonce": bookingProAppointment.nonce
+      },
+      body: formDataObj
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }).then(data => {
+      if (data.status == "success") {
+        react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.success(data.message);
+        fetchAppointments();
+        closePopup();
+      } else {
+        react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(data.message);
+      }
+    }).catch(error => {
+      react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
+    });
+  };
+  // Fetch appointment status end
+
+  // Fetch time slot start
+  const fetchTimeSlot = () => {
+    fetch(`${bookingProAppointment.api_base_url}get-appointment-time-slot`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProAppointment.nonce
+      }
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }).then(data => {
+      if (data.status == "success") {
+        setTimeSlots(data.data);
+        console.log(data.data);
+      } else {
+        setTimeSlots([]);
+      }
+    }).catch(error => {
+      react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
+    });
+  };
+  // Fetch time slot end
+
+  // Fetch services data start
+  const getServiceData = () => {
+    fetch(`${bookingProAppointment.api_base_url}get-services`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProAppointment.nonce
+      }
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }).then(data => {
+      if (data.status == "success") {
+        setServices(data.data);
+        console.log(data.data);
+      } else {
+        setServices([]);
+      }
+    }).catch(error => {
+      react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
+    });
+  };
+  // Fetch services data end
+
+  // Fetch staff data start
+  const fetchStaffs = () => {
+    fetch(`${bookingProAppointment.api_base_url}get-staff`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProAppointment.nonce,
+        "Content-Type": "application/json"
+      }
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }).then(data => {
+      if (data.status == "success") {
+        setStaffs(data.data);
+        console.log(data.data);
+      } else {
+        setStaffs([]);
+      }
+    }).catch(error => {
+      react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    getServiceData();
+    fetchStaffs();
+    fetchTimeSlot();
+  }, []);
+
+  // Fetch staff data end
+
+  // Fetch appointments data start
+  const fetchAppointments = () => {
+    setLoading(true);
+    fetch(`${bookingProAppointment.api_base_url}get-appointments?page=${currentPage}&limit=${itemsPerPage}&search=${searchQuery}`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProAppointment.nonce,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json()).then(data => {
+      if (data.status == "success") {
+        setAppointments(data.data);
+        setTotalPages(data.total_pages);
+        setCurrentPage(data.current_page);
+        setLoading(false);
+      } else {
+        setAppointments([]);
+      }
+      setLoading(false);
+    }).catch(error => {
+      react_toastify__WEBPACK_IMPORTED_MODULE_2__.toast.error(error);
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    fetchAppointments();
+  }, [refreshKey, currentPage, searchQuery]);
+  // Fetch appointments data start
+
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.Fragment, {
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
       className: "bp-appointments-container",
@@ -437,9 +955,9 @@ const Appointments = () => {
         url: pageURL
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
         className: "bp-app-content",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
           className: "bp-app-cont-inner",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
             className: "bp-app-ci-top",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("h2", {
               style: {
@@ -447,15 +965,297 @@ const Appointments = () => {
               },
               children: "Manage Appointments"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
-              className: "add-appointments"
-              //onClick={openPopup}
-              ,
+              className: "staff-search",
+              value: searchQuery,
+              onChange: handleSearch,
+              type: "text",
+              placeholder: "Search for customers, email..."
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+              className: "add-staff",
+              style: {
+                visibility: "hidden"
+              },
               type: "button",
               value: "Add New Appointment"
             })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+            className: "bpsci-second",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("table", {
+              className: "bp-staff-table",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("thead", {
+                className: "bps-table-head",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("tr", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "ID"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Customer"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Service"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Staff"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Status"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Created Date"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("th", {
+                    children: "Actions"
+                  })]
+                })
+              }), loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)((react_spinners_HashLoader__WEBPACK_IMPORTED_MODULE_6___default()), {
+                color: "#687de8",
+                cssOverride: overrideCss
+              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("tbody", {
+                children: appointments.map((appointment, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("tr", {
+                    className: "bps-table-item",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: index + 1
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: appointment.full_name
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: services.find(service => service.id === appointment.service_id)?.service_name || 'Service not found'
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: staffs.find(staff => staff.id === appointment.staff_id)?.name || 'Staff not found'
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                        className: appointment.status === 'scheduled' ? 'status-inactive' : appointment.status === 'cancelled' ? 'status-cancelled' : 'status-active',
+                        children: appointment.status
+                      })
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      children: appointment.created_at
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("td", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                        onClick: () => toggleRow(index) // Toggle row when clicked
+                        ,
+                        style: {
+                          cursor: 'pointer'
+                        },
+                        className: "dashicons dashicons-visibility"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                        onClick: openPopup,
+                        "data-id": appointment.id,
+                        className: "dashicons dashicons-edit"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                        className: "dashicons dashicons-trash",
+                        onClick: () => handleDeleteAppointment(appointment.id)
+                      })]
+                    })]
+                  }), expandedRow === index && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("tr", {
+                    className: "bps-table-expanded",
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("td", {
+                      colSpan: "7",
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                        className: "expanded-content",
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                          className: "expanded-left-content",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("h2", {
+                            children: "Appointment Details"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: " ID :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("span", {
+                              className: "bpd-content-2",
+                              children: ["#", appointment.id]
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: " Date (Y-M-D) :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content-2",
+                              children: appointment.appointment_date
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: " Time :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content-2",
+                              children: timeSlots.find(timeSlot => timeSlot.id === appointment.appointment_time)?.slot_time || 'Time not found'
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Service :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: services.find(service => service.id === appointment.service_id)?.service_name || 'Service not found'
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Staff :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: staffs.find(staff => staff.id === appointment.staff_id)?.name || 'Staff not found'
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Notes :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: appointment.notes
+                            })]
+                          })]
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                          className: "expanded-right-content",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("h2", {
+                            children: "Customer Details"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Name:"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: appointment.full_name
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: " Email:"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: appointment.email
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Phone:"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: appointment.phone
+                            })]
+                          })]
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                          className: "expanded-right-middle",
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("h2", {
+                            children: "Payment Status"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Payment Method :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: "bpd-content",
+                              children: "Manual"
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Status :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("span", {
+                              className: appointment.status === 'scheduled' ? 'status-inactive bpd-content' : appointment.status === 'cancelled' ? 'status-cancelled bpd-content' : 'status-active bpd-content',
+                              children: appointment.status
+                            })]
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("p", {
+                            className: "bp-details-title",
+                            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("strong", {
+                              children: "Total Amount :"
+                            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("span", {
+                              className: "bpd-content",
+                              children: ["$", services.find(service => service.id === appointment.service_id)?.price || 'Service not found']
+                            })]
+                          })]
+                        })]
+                      })
+                    })
+                  })]
+                }, appointment.id))
+              })]
+            }), appointments.length === 0 && !loading && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+              className: "bp-ser-no-data",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("img", {
+                src: _assets_images_no_data_png__WEBPACK_IMPORTED_MODULE_4__,
+                alt: "No Data"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+                style: {
+                  display: "flex",
+                  justifyContent: "center"
+                },
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("p", {
+                  className: "no-data",
+                  children: "No Appointments found"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("input", {
+                  className: "add-staff"
+                  //onClick={openPopup}
+                  ,
+                  type: "button",
+                  value: "Add New Appointment"
+                })]
+              })]
+            }), totalPages > 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+              className: "staff-pagination",
+              style: {
+                marginTop: "20px"
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+                className: currentPage === 1 ? "pagi-deactive" : "pagi-active",
+                onClick: () => setCurrentPage(currentPage - 1),
+                disabled: currentPage === 1,
+                children: "Previous"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("span", {
+                className: "pagi-page",
+                children: [currentPage, " of ", totalPages]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+                className: currentPage === totalPages ? "pagi-deactive" : "pagi-active",
+                onClick: () => setCurrentPage(currentPage + 1),
+                disabled: currentPage === totalPages,
+                children: "Next"
+              })]
+            })]
+          })]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+        className: "add-staff-popup",
+        children: isUpOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+          style: popupStyles.overlay,
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("div", {
+            style: popupStyles.popup,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("h2", {
+              className: "staff-heading",
+              children: "Update Staff"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("form", {
+              onSubmit: changeStatus,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                className: "staff-form-inner",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+                  className: "staff-second",
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("select", {
+                    name: "status"
+                    // value={formData.status}
+                    ,
+                    style: {
+                      width: "100%",
+                      borderRadius: "20px"
+                    },
+                    onClick: handleStatusChange,
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("option", {
+                      value: "scheduled",
+                      children: "Scheduled"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("option", {
+                      value: "completed",
+                      children: "Completed"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("option", {
+                      value: "cancelled",
+                      children: "Cancelled"
+                    })]
+                  })
+                })
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+                className: "staff-sub",
+                type: "submit",
+                children: "Save"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("button", {
+                className: "staff-can",
+                type: "button",
+                onClick: closePopup,
+                children: "Cancel"
+              })]
+            })]
           })
         })
-      })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_toastify__WEBPACK_IMPORTED_MODULE_2__.ToastContainer, {})]
     })
   });
 };

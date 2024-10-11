@@ -213,3 +213,79 @@ span.status-inactive {
   border-radius: 5px;
   width: 100%;
 }
+.bps-table-expanded {
+  transition:1s ;
+  overflow: hidden;
+}
+
+.expanded-content {display: flex;height: 300px;background-color: #dcdcf3cc;margin-bottom: 10px;}
+.bpd-content {
+  padding: 2px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  text-align: center;
+  
+}
+.bpd-content-2 {
+  padding: 2px 10px;
+  margin-left: 20px;
+  border-radius: 5px;
+  text-align: center;
+  background: #687de8;
+  color:white;
+}
+.expanded-left-content {
+  width: 33%;
+  padding: 30px 40px;
+}
+.expanded-right-content {
+  width: 33%;
+  padding: 30px 40px;
+}
+.expanded-right-middle {
+  width: 33%;
+  padding: 30px 40px;
+}
+.expanded-left-content h2 {
+  border-bottom: 1px solid #b4b4f3;
+  font-size: 17px;
+  padding-bottom: 20px;
+  font-family: 'Figtree';
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.expanded-right-content h2 {
+  border-bottom: 1px solid #b4b4f3;
+  font-size: 17px;
+  padding-bottom: 20px;
+  font-family: 'Figtree';
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.expanded-right-middle h2 {
+  border-bottom: 1px solid #b4b4f3;
+  font-size: 17px;
+  padding-bottom: 20px;
+  font-family: 'Figtree';
+  font-weight: 700;
+  text-transform: capitalize;
+}
+span.dashicons.dashicons-visibility {
+  width: 20px;
+  color: #525281;
+  padding: 6px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+span.dashicons.dashicons-visibility:hover {
+  color: white;
+  background: #687de8;
+}
+span.status-cancelled {
+  padding: 5px 10px;
+  background:#ee2445;
+  color:white;
+  border-radius: 20px;
+  text-transform: capitalize;
+}

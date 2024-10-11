@@ -28,6 +28,12 @@ class BP_Admin
             $this->bp_register_rest_routes_get_services();
             $this->bp_register_rest_routes_delete_service();
             $this->bp_register_rest_routes_update_service();
+
+            // Appointments routes
+            $this->bp_register_rest_routes_get_appointments();
+            $this->bp_register_rest_routes_get_appointment_time_slot();
+            $this->bp_register_rest_routes_update_appointment_status();
+            $this->bp_register_rest_routes_delete_appointment();
         }
     //Construct for hook end
 
@@ -89,6 +95,7 @@ class BP_Admin
                 wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $app_dep['version']);
                 wp_enqueue_style ('bp-appointments', BP_DIR_URL . 'admin/assets/css/appointments.css', [], $app_dep['version']);
                 wp_enqueue_style ('bp-tostify', BP_DIR_URL.'admin/assets/css/ReactTostify.css', [], $app_dep['version']);
+                wp_enqueue_style ('bp-services', BP_DIR_URL.'admin/assets/css/staff.css', [], $app_dep['version']);
                 
                 // Localize script to pass data to React app
                 wp_localize_script('bp-appointments', 'bookingProAppointment', [
@@ -1045,7 +1052,280 @@ class BP_Admin
         }
     // Register REST API routes for service page end
 
+    
+    // Register REST API routes for appointment page start
+        public function bp_register_rest_routes_get_appointments() {
+            register_rest_route('booking-pro/v1', '/get-appointments', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_appointments_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'page' => [
+                        'required' => false,
+                        'default' => 1,
+                        'sanitize_callback' => 'absint', // Ensures the value is a positive integer.
+                    ],
+                    'limit' => [
+                        'required' => false,
+                        'default' => 10,
+                        'sanitize_callback' => 'absint',
+                    ],
+                    'search' => [
+                        'required' => false,
+                        'sanitize_callback' => 'sanitize_text_field', // Sanitize the search query
+                    ],
+                ],
 
+            ]);
+        }
+        public function bp_get_appointments_callback( $request ) {
+            // Check for the nonce
+            // $nonce = $request->get_header('X-WP-Nonce');
+
+            // if (!$nonce) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce not found in headers!',
+            //     ], 403);
+            // }
+
+            // if (!wp_verify_nonce($nonce, 'wp_rest')) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce Validation Failed!',
+            //     ], 403);
+            // }
+
+            // Get pagination parameters from the request
+            $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+            $limit = $request->get_param('limit') ? intval($request->get_param('limit')) : 10;
+            $search = $request->get_param('search') ? sanitize_text_field($request->get_param('search')) : '';
+            $offset = ($page - 1) * $limit; 
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_appointments';
+
+            $sql = "SELECT * FROM $table_name";
+
+            // Add search functionality if a search term is provided
+            if (!empty($search)) {
+                $sql .= $wpdb->prepare(" WHERE full_name LIKE %s OR email LIKE %s", '%' . $wpdb->esc_like($search) . '%', '%' . $wpdb->esc_like($search) . '%');
+            }
+
+            // Add LIMIT and OFFSET for pagination
+            $sql .= $wpdb->prepare(" LIMIT %d OFFSET %d", $limit, $offset);
+
+            $appointments = $wpdb->get_results($sql);
+
+            // Get total number of records (for pagination)
+            $total_appointments = $wpdb->get_var("SELECT COUNT(*) FROM $table_name" . (!empty($search) ? $wpdb->prepare(" WHERE full_name LIKE %s OR email LIKE %s", '%' . $wpdb->esc_like($search) . '%', '%' . $wpdb->esc_like($search) . '%') : ''));
+
+            // Calculate total pages
+            $total_pages = ceil($total_appointments / $limit);
+
+            // Return the response with pagination info
+            if (!empty($appointments)) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $appointments,
+                    'total_pages' => $total_pages,
+                    'current_page' => $page,
+                    'total_appointments' => $total_appointments,
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No Apointments  found',
+                ], 500);
+            }
+        }
+
+        public function bp_register_rest_routes_get_appointment_time_slot(){
+            register_rest_route('booking-pro/v1', '/get-appointment-time-slot', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_appointment_time_slot_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'appointment_date' => [
+                        'required' => false,
+                        'sanitize_callback' => 'sanitize_text_field', // Sanitize the appointment date
+                    ],
+                ],
+
+            ]);        
+        }
+        public function bp_get_appointment_time_slot_callback( $request ) {
+            // Check for the nonce
+            // $nonce = $request->get_header('X-WP-Nonce');
+
+            // if (!$nonce) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce not found in headers!',
+            //     ], 403);
+            // }
+
+            // if (!wp_verify_nonce($nonce, 'wp_rest')) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce Validation Failed!',
+            //     ], 403);
+            // }
+
+            //$appointment_date = $request->get_param('appointment_date') ? sanitize_text_field($request->get_param('appointment_date')) : '';
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_appointment_time_slot';
+
+            $sql = "SELECT * FROM $table_name";
+
+            $appointment_time_slots = $wpdb->get_results($sql);
+
+            if (!empty($appointment_time_slots)) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $appointment_time_slots,
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No Apointment time slot  found',
+                ], 500);
+            }
+        }
+
+        public function bp_register_rest_routes_update_appointment_status() {
+            register_rest_route('booking-pro/v1', '/update-appointment-status', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'bp_update_appointment_status_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+        }
+        public function bp_update_appointment_status_callback( $request ) {
+            // Check for the nonce
+            // $nonce = $request->get_header('X-WP-Nonce');
+
+            // if (!$nonce) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce not found in headers!',
+            //     ], 403);
+            // }
+
+            // if (!wp_verify_nonce($nonce, 'wp_rest')) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce Validation Failed!',
+            //     ], 403);
+            // }
+
+            $appointment_id = intval($request['appointment_id']); // Extract the appointment ID from the request
+            $appointment_status = sanitize_text_field($request['appointment_status']);
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_appointments';
+
+            // Check if appointment is exist in $table_name
+            $existing_appointment = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $appointment_id));
+            if(!$existing_appointment){
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Appointment not found!',
+                ], 404);
+            }
+
+            // Update data into the database
+            $update_appointment = $wpdb->update(
+                $table_name,
+                array(
+                    'status' => $appointment_status,
+                ),
+                array(
+                    'id' => $appointment_id,
+                )
+            );
+
+            if($update_appointment){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Appointment status updated successfully!',
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to update. Please change appointment status!',
+                ], 200);
+            }
+        }
+
+        public function bp_register_rest_routes_delete_appointment() {
+            register_rest_route('booking-pro/v1', '/delete-appointment', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'bp_delete_appointment_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'id' => [
+                        'required' => true,
+                        'sanitize_callback' => 'absint', // Ensures the value is a positive integer.
+                    ],
+                ],
+            ]);
+        }
+        public function bp_delete_appointment_callback( $request ) {
+            // Check for the nonce
+            // $nonce = $request->get_header('X-WP-Nonce');
+
+            // if (!$nonce) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce not found in headers!',
+            //     ], 403);
+            // }
+
+            // if (!wp_verify_nonce($nonce, 'wp_rest')) {
+            //     return new WP_REST_Response([
+            //         'status' => 'failed',
+            //         'message' => 'Nonce Validation Failed!',
+            //     ], 403);
+            // }
+
+            $appointment_id = $request->get_param('id');;  // Extract the appointment ID from the url parameter
+
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'bp_appointments';
+
+            // Check if appointment is exist in $table_name
+            $existing_appointment = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $appointment_id));
+            if(!$existing_appointment){
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Appointment not found!',
+                ], 404);
+            }
+
+            // Delete data from the database
+            $delete_appointment = $wpdb->delete(
+                $table_name,
+                array(
+                    'id' => $appointment_id,
+                )
+            );
+
+            if($delete_appointment){
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Appointment deleted successfully!',
+                ], 200);
+            }else{
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to delete appointment!',
+                ], 500);
+            }
+        }
+        
+    // Register REST API routes for appointment page end 
 
 }
 new BP_Admin();

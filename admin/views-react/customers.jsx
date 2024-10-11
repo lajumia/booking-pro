@@ -261,7 +261,7 @@ const Customers = () => {
                   <tbody>
                     {customers.map((user, index) => (
                       <tr key={user.id} className="bpd-table-item">
-                        <td>{index + 1}</td>
+                        <td>{index + 1} {user.id}</td>
                         <td>
                           <img
                             src={

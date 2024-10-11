@@ -56,26 +56,26 @@ class BP_Activator {
             PRIMARY KEY (`id`)
         ) $charset_collate;";
 
+
         // SQL query to create the bp_appointments table
         $sql_appointments = "CREATE TABLE IF NOT EXISTS `{$bp_appointments}` (
             `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `full_name` VARCHAR(255) NOT NULL,
+            `email` VARCHAR(255) NOT NULL,
+            `phone` VARCHAR(20) NOT NULL,
+            `notes` VARCHAR(255) NOT NULL,
             `customer_id` BIGINT(20) UNSIGNED NOT NULL,
-            `staff_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-            `service_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-            `appointment_date` DATETIME NOT NULL,
-            `appointment_time_slot` VARCHAR(255) NOT NULL,
-            `status` ENUM('booked', 'confirmed', 'completed', 'canceled') DEFAULT 'booked',
-            `notes` TEXT DEFAULT NULL,
+            `staff_id` BIGINT(20) UNSIGNED NOT NULL,
+            `service_id` BIGINT(20) UNSIGNED NOT NULL,
+            `appointment_date` VARCHAR(255) NOT NULL,
+            `appointment_time` BIGINT(20) UNSIGNED NOT NULL,
+            `status` ENUM('scheduled', 'completed', 'cancelled') DEFAULT 'scheduled',
             `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
             `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `customer_id` (`customer_id`),
             KEY `staff_id` (`staff_id`),
-            KEY `service_id` (`service_id`),
-            CONSTRAINT `fk_customer` FOREIGN KEY (`customer_id`) REFERENCES `wp_users` (`ID`) ON DELETE CASCADE,
-            CONSTRAINT `fk_staff` FOREIGN KEY (`staff_id`) REFERENCES `{$bp_staff}` (`id`) ON DELETE SET NULL,
-            CONSTRAINT `fk_service` FOREIGN KEY (`service_id`) REFERENCES `{$bp_services}` (`id`) ON DELETE SET NULL,
-            CONSTRAINT `fk_time_slot` FOREIGN KEY (`appointment_time_slot`) REFERENCES `{$bp_appointment_time_slot}` (`slot_time`) ON DELETE SET NULL          
+            KEY `service_id` (`service_id`)
         ) $charset_collate;";
 
         // SQL query to create the bp_payments table
@@ -91,10 +91,8 @@ class BP_Activator {
             `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `customer_id` (`customer_id`),
-            KEY `appointment_id` (`appointment_id`),
-            CONSTRAINT `fk_customer_payment` FOREIGN KEY (`customer_id`) REFERENCES `{$bp_customers}` (`id`) ON DELETE CASCADE,
-            CONSTRAINT `fk_appointment_payment` FOREIGN KEY (`appointment_id`) REFERENCES `{$bp_appointments}` (`id`) ON DELETE CASCADE
-        ) $charset_collate;";            
+            KEY `appointment_id` (`appointment_id`)
+            ) $charset_collate;";            
 
         // SQL query to create the bp_notifications table
         $sql_notifications = "CREATE TABLE IF NOT EXISTS `{$bp_notifications}` (
@@ -118,7 +116,6 @@ class BP_Activator {
         
 
 
-
         // Include the required file for dbDelta()
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -126,33 +123,89 @@ class BP_Activator {
         dbDelta($sql_customers);
         dbDelta($sql_staff);
         dbDelta($sql_services);
-        dbDelta($sql_appointment_time_slot);
         dbDelta($sql_appointments);
+        dbDelta($sql_appointment_time_slot);
         dbDelta($sql_payments); 
         dbDelta($sql_notifications);
-        
+
+        // Add the foreign key constraints manually
+        $foreign_keys_for_appointment = "ALTER TABLE `{$bp_appointments}`
+        ADD CONSTRAINT `fk_customer_appointment` FOREIGN KEY (`customer_id`) REFERENCES `{$wpdb->users}` (`ID`) ON DELETE CASCADE,
+        ADD CONSTRAINT `fk_staff_appointment` FOREIGN KEY (`staff_id`) REFERENCES `{$bp_staff}` (`id`) ON DELETE CASCADE,
+        ADD CONSTRAINT `fk_service_appointment` FOREIGN KEY (`service_id`) REFERENCES `{$bp_services}` (`id`) ON DELETE CASCADE;";
+        $wpdb->query($foreign_keys_for_appointment);
+
+        // Add the foreign key constraints manually
+        $foreign_keys_for_payment = "ALTER TABLE `{$bp_payments}`
+        ADD CONSTRAINT `fk_customer_appointment` FOREIGN KEY (`customer_id`) REFERENCES `{$wpdb->users}` (`ID`) ON DELETE CASCADE,
+        ADD CONSTRAINT `fk_appointment_payment` FOREIGN KEY (`appointment_id`) REFERENCES `{$bp_appointments}` (`id`) ON DELETE CASCADE;";
+        $wpdb->query($foreign_keys_for_payment);
 
         // Insert slot time into appointment time slot table
-        $slot_times = [
-            '9:00 AM - 10:00 AM',
-            '10:00 AM - 11:00 AM',
-            '11:00 AM - 12:00 PM',
-            '12:00 PM - 1:00 PM',
-            '1:00 PM - 2:00 PM',
-            '2:00 PM - 3:00 PM',
-            '3:00 PM - 4:00 PM',
-            '4:00 PM - 5:00 PM',
-            '5:00 PM - 6:00 PM',
-            '6:00 PM - 7:00 PM',
-            '7:00 PM - 8:00 PM',
-            '8:00 PM - 9:00 PM'
-        ];
-        //insert slots time into the table
-        foreach ($slot_times as $slot_time) {
-            $wpdb->insert(
-                $bp_appointment_time_slot,
+
+        // Check if the table is empty
+        $slot_count = $wpdb->get_var("SELECT COUNT(*) FROM $bp_appointment_time_slot");
+
+        if ($slot_count == 0) {
+            // Insert slot time into appointment time slot table
+            $slot_times = [
+                '9:00 AM - 10:00 AM',
+                '10:00 AM - 11:00 AM',
+                '11:00 AM - 12:00 PM',
+                '12:00 PM - 1:00 PM',
+                '1:00 PM - 2:00 PM',
+                '2:00 PM - 3:00 PM',
+                '3:00 PM - 4:00 PM',
+                '4:00 PM - 5:00 PM',
+                '5:00 PM - 6:00 PM',
+                '6:00 PM - 7:00 PM',
+                '7:00 PM - 8:00 PM',
+                '8:00 PM - 9:00 PM'
+            ];
+
+            // Insert slots time into the table
+            foreach ($slot_times as $slot_time) {
+                $wpdb->insert(
+                    $bp_appointment_time_slot,
+                    array(
+                        'slot_time' => $slot_time
+                    )
+                );
+            }
+
+        }
+
+        // Create a new page with shortcode 
+        $page_title = 'Booking Pro';
+        $page_content = '[booking_pro_form]';
+        $page_template = '';
+        $page = get_page_by_title($page_title);
+        if (empty($page)) {
+            $page_id = wp_insert_post(
                 array(
-                    'slot_time' => $slot_time
+                    'post_title' => $page_title,
+                    'post_content' => $page_content,
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'post_author' => 1,
+                    'page_template' => $page_template
+                )
+            );
+        }
+        // Create a new page with shortcode for thank you page
+        $thank_you_page_title = 'Booking Pro Thank You';
+        $thank_you_page_content = '[booking_pro_thank_you]';
+        $thank_you_page_template = '';
+        $thank_you_page = get_page_by_title($thank_you_page_title);
+        if (empty($thank_you_page)) {
+            $thank_you_page_id = wp_insert_post(
+                array(
+                    'post_title' => $thank_you_page_title,
+                    'post_content' => $thank_you_page_content,
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'post_author' => 1,
+                    'page_template' => $thank_you_page_template
                 )
             );
         }

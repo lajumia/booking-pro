@@ -80,7 +80,7 @@ const Staff = () => {
 
   //State and function for create staff start
   const [refreshKey, setRefreshKey] = useState(0);
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] =useState({
     full_name: "",
     email: "",
     phone: "",
@@ -178,74 +178,74 @@ const Staff = () => {
   //State and function to get staff end
 
   //State and function for delete staff start
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete?");
-    if (confirmDelete) {
+    const handleDelete = async (id) => {
+      const confirmDelete = window.confirm("Are you sure you want to delete?");
+      if (confirmDelete) {
+        try {
+          const response = await fetch(
+            `${bookingProStaff.api_base_url}delete-staff/${id}`,
+            {
+              method: "DELETE",
+              headers: {
+                "X-WP-Nonce": bookingProStaff.nonce,
+              },
+            }
+          );
+          const result = await response.json();
+          if (response.ok) {
+            toast.success(result.message);
+            setRefreshKey((oldKey) => oldKey - 1);
+          } else {
+            toast.error(result.message);
+          }
+        } catch (error) {
+          toast.error(error);
+        }
+      }
+    };
+  //State and function for delete staff end
+
+  //State and function for update staff start
+    const handleStatusChange = (e) => {
+      const { value } = e.target;
+      setEditStaffData({ ...editStaffData, status: value });
+    };
+    const handleUpChange = (e) => {
+      const { name, value } = e.target;
+      setEditStaffData({ ...editStaffData, [name]: value });
+    };
+    const handleUpdate = async (e) => {
+      e.preventDefault();
+      closeUpdatePopup();
+
+      const upFormDataObj = new FormData();
+      upFormDataObj.append("full_name", editStaffData.full_name);
+      upFormDataObj.append("email", editStaffData.email);
+      upFormDataObj.append("phone", editStaffData.phone);
+      upFormDataObj.append("status", editStaffData.status);
+
       try {
         const response = await fetch(
-          `${bookingProStaff.api_base_url}delete-staff/${id}`,
+          `${bookingProStaff.api_base_url}update-staff/${upDataId}`,
           {
-            method: "DELETE",
+            method: "POST",
             headers: {
               "X-WP-Nonce": bookingProStaff.nonce,
             },
+            body: upFormDataObj,
           }
         );
         const result = await response.json();
         if (response.ok) {
           toast.success(result.message);
-          setRefreshKey((oldKey) => oldKey - 1);
+          setRefreshKey((oldKey) => oldKey + 1);
         } else {
           toast.error(result.message);
         }
       } catch (error) {
         toast.error(error);
       }
-    }
-  };
-  //State and function for delete staff end
-
-  //State and function for update staff start
-  const handleStatusChange = (e) => {
-    const { value } = e.target;
-    setEditStaffData({ ...editStaffData, status: value });
-  };
-  const handleUpChange = (e) => {
-    const { name, value } = e.target;
-    setEditStaffData({ ...editStaffData, [name]: value });
-  };
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    closeUpdatePopup();
-
-    const upFormDataObj = new FormData();
-    upFormDataObj.append("full_name", editStaffData.full_name);
-    upFormDataObj.append("email", editStaffData.email);
-    upFormDataObj.append("phone", editStaffData.phone);
-    upFormDataObj.append("status", editStaffData.status);
-
-    try {
-      const response = await fetch(
-        `${bookingProStaff.api_base_url}update-staff/${upDataId}`,
-        {
-          method: "POST",
-          headers: {
-            "X-WP-Nonce": bookingProStaff.nonce,
-          },
-          body: upFormDataObj,
-        }
-      );
-      const result = await response.json();
-      if (response.ok) {
-        toast.success(result.message);
-        setRefreshKey((oldKey) => oldKey + 1);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      toast.error(error);
-    }
-  };
+    };
   //State and function for update staff end
 
   return (

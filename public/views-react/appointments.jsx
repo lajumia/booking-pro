@@ -8,8 +8,6 @@ const initAppointments = () => {
   if (appointmentsDiv) {
     const root = createRoot(appointmentsDiv);
     root.render(<AppointmentForm />);
-  } else {
-    console.error("Appointments root element not found.");
   }
 };
 document.addEventListener("DOMContentLoaded", initAppointments);

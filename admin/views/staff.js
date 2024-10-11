@@ -773,7 +773,7 @@ const Staff = () => {
 
   //State and function for create staff start
   const [refreshKey, setRefreshKey] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
-  const [formData, setFormData] = react__WEBPACK_IMPORTED_MODULE_0___default().useState({
+  const [formData, setFormData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     full_name: "",
     email: "",
     phone: "",

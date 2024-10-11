@@ -26,6 +26,7 @@ const publicConfig = {
   ...defaultConfig, // Extend the default @wordpress/scripts config
   entry: {
     appointments: "./public/views-react/appointments.jsx", // Entry point for Public Appointments
+    thankyou: "./public/views-react/thank-you.jsx", // Entry point for Thank You page
   },
   output: {
     path: path.resolve(__dirname, "public/views"), // Output directory for public files
