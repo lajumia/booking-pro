@@ -12,3 +12,11 @@
 .bp-dash-container {
     height: 100%;
 }
+input.bpd-filter-by-date {
+    border: 1px solid #4a5799;
+    color: #4a5799;
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+};

@@ -47,22 +47,22 @@ class BP_Public{
             ]);      
         }
         public function get_appointments_form_data(WP_REST_Request $request){
-            // Check for the nonce
-            // $nonce = $request->get_header('X-WP-Nonce');
+            //Check for the nonce
+            $nonce = $request->get_header('X-WP-Nonce');
 
-            // if (!$nonce) {
-            //     return new WP_REST_Response([
-            //         'status' => 'failed',
-            //         'message' => 'Nonce not found in headers!',
-            //     ], 403);
-            // }
+            if (!$nonce) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce not found in headers!',
+                ], 403);
+            }
 
-            // if (!wp_verify_nonce($nonce, 'wp_rest')) {
-            //     return new WP_REST_Response([
-            //         'status' => 'failed',
-            //         'message' => 'Nonce Validation Failed!',
-            //     ], 403);
-            // }
+            if (!wp_verify_nonce($nonce, 'wp_rest')) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Nonce Validation Failed!',
+                ], 403);
+            }
 
             global $wpdb;
 
@@ -71,18 +71,12 @@ class BP_Public{
             $staff = $wpdb->get_results(
                 $wpdb->prepare("SELECT * FROM $staff_table WHERE status = %s", 'active')
             );
-            // if(!$staff){
-            //     return new WP_REST_Response(['message' => 'Staff not found'], 404);
-            // }
 
             // Fetch services from services table
             $service_table = $wpdb->prefix . 'bp_services';
             $services = $wpdb->get_results(
                 $wpdb->prepare("SELECT * FROM $service_table WHERE status = %s", 'active')
             );
-            // if(!$services){
-            //     return new WP_REST_Response(['message' => 'Services not found'], 404);
-            // }
 
             
             return new WP_REST_Response([
@@ -117,8 +111,8 @@ class BP_Public{
         public function get_available_time_slot(WP_REST_Request $request) {
             global $wpdb;
         
-            $staff_id = intval($request['staff_id']);  // Staff member
-            $appointment_date = sanitize_text_field($request['date']);  // Selected date
+            $staff_id = intval($request['staff_id']); 
+            $appointment_date = sanitize_text_field($request['date']);
         
             // Fetch all the time slots from the time slot table
             $time_slot_table = $wpdb->prefix . 'bp_appointment_time_slot';
@@ -136,9 +130,6 @@ class BP_Public{
                 )
             );
         
-            // Debug: Log booked slots to check their values
-            error_log('Booked Slots: ' . print_r($booked_slots, true));
-        
             // Filter out the booked slots from the available slots if there are booked slots
             if (!empty($booked_slots)) {
                 $available_slots = array_filter($all_slots, function($slot) use ($booked_slots) {
@@ -149,9 +140,6 @@ class BP_Public{
                 // If no slots are booked, all slots are available
                 $available_slots = $all_slots;
             }
-        
-            // Debug: Log available slots to check the filtered results
-            error_log('Available Slots: ' . print_r($available_slots, true));
         
             // Return the response with available slots
             return new WP_REST_Response([
