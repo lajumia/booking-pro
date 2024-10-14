@@ -3063,6 +3063,66 @@ const Header = ({
 
 /***/ }),
 
+/***/ "./admin/views-react/components/appointmentDetails.jsx":
+/*!*************************************************************!*\
+  !*** ./admin/views-react/components/appointmentDetails.jsx ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const AppointmentDetailsModal = ({
+  appointment,
+  onClose
+}) => {
+  if (!appointment) return null; // If no appointment is selected, don't render
+
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+    className: "modal-overlay",
+    onClick: onClose,
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "modal-content",
+      onClick: e => e.stopPropagation(),
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+        children: "Appointment Details"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          children: "Name:"
+        }), " ", appointment.title]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          children: "Date:"
+        }), " ", appointment.start.toLocaleDateString()]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("strong", {
+          children: "Time:"
+        }), " ", appointment.start.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        }), " ", "\u2013", " ", appointment.end.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+        onClick: onClose,
+        children: "Close"
+      })]
+    })
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AppointmentDetailsModal);
+
+/***/ }),
+
 /***/ "./node_modules/clsx/dist/clsx.m.js":
 /*!******************************************!*\
   !*** ./node_modules/clsx/dist/clsx.m.js ***!
@@ -21688,14 +21748,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var react_big_calendar_lib_css_react_big_calendar_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-big-calendar/lib/css/react-big-calendar.css */ "./node_modules/react-big-calendar/lib/css/react-big-calendar.css");
 /* harmony import */ var _components_Header__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/Header */ "./admin/views-react/components/Header.jsx");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _components_appointmentDetails__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/appointmentDetails */ "./admin/views-react/components/appointmentDetails.jsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__);
 
 
 
 
 
 
+ // Import the modal
 
 const localizer = (0,react_big_calendar__WEBPACK_IMPORTED_MODULE_2__.momentLocalizer)((moment__WEBPACK_IMPORTED_MODULE_3___default()));
 const Calender = () => {
@@ -21706,10 +21768,11 @@ const Calender = () => {
   minTime.setHours(8, 0, 0); // Start at 8:00 AM
 
   const maxTime = new Date();
-  maxTime.setHours(17, 0, 0); // End at 5:00 PM
+  maxTime.setHours(18, 0, 0); // End at 5:00 PM
 
   // Fetch appointments from the API
   const [appointments, setAppointments] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [selectedAppointment, setSelectedAppointment] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     fetchAppointments();
   }, []);
@@ -21718,48 +21781,73 @@ const Calender = () => {
       const response = await fetch(`${bookingProCalender.api_base_url}get-appointments-by-status`);
       const response_data = await response.json();
       const data = response_data.data;
-      //console.log(data);
 
       // Format the data to match the calendar's event structure
-      const formattedAppointments = data.map(appointment => ({
-        id: appointment.id,
-        title: appointment.full_name,
-        start: new Date(appointment.appointment_time),
-        // Convert start time to Date object
-        end: new Date(appointment.appointment_time) // Convert end time to Date object
-      }));
+      const formattedAppointments = data.map(appointment => {
+        const {
+          start,
+          end
+        } = parseTimeRange(appointment.appointment_time, appointment.appointment_date);
+        return {
+          id: appointment.id,
+          title: appointment.full_name,
+          start,
+          // Parsed start Date object
+          end // Parsed end Date object
+        };
+      });
       setAppointments(formattedAppointments); // Set the events in the state
     } catch (error) {
-      console.error('Error fetching appointments:', error);
+      console.error("Error fetching appointments:", error);
     }
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+
+  // Helper function to parse the time range and return start and end Date objects
+  const parseTimeRange = (timeRange, date) => {
+    const [startTime, endTime] = timeRange.split(" - "); // Split into start and end time
+    const start = moment__WEBPACK_IMPORTED_MODULE_3___default()(`${date} ${startTime}`, "YYYY-MM-DD h:mm A").toDate();
+    const end = moment__WEBPACK_IMPORTED_MODULE_3___default()(`${date} ${endTime}`, "YYYY-MM-DD h:mm A").toDate();
+    return {
+      start,
+      end
+    };
+  };
+  const handleSelectEvent = event => {
+    setSelectedAppointment(event); // Set the selected appointment
+  };
+  const handleCloseModal = () => {
+    setSelectedAppointment(null); // Close the modal
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
     className: "bp-dash-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_components_Header__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_Header__WEBPACK_IMPORTED_MODULE_5__["default"], {
       currentPage: "calendar",
       url: pageURL
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
       className: "bp-dash-content",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
         className: "bp-dash-cont-inner",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
           className: "bpdci-top",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("h2", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("h2", {
             style: {
               fontSize: "23px"
             },
             children: "Dashboard"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)("input", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("input", {
             className: "bpd-filter-by-date",
+            style: {
+              visibility: "hidden"
+            },
             type: "date"
           })]
-        }), console.log(appointments), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(react_big_calendar__WEBPACK_IMPORTED_MODULE_2__.Calendar, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(react_big_calendar__WEBPACK_IMPORTED_MODULE_2__.Calendar, {
           localizer: localizer,
           events: appointments // Add your events here
           ,
           defaultView: "week" // Choose between 'week' or 'day'
           ,
-          views: ['month', 'week', 'day'] // Allow day and week views
+          views: ["month", "week", "day"] // Allow day and week views
           ,
           step: 30 // 30-minute intervals for time slots
           ,
@@ -21771,22 +21859,34 @@ const Calender = () => {
           ,
           style: {
             height: 600
-          }
+          },
+          formats: {
+            timeGutterFormat: (date, culture, localizer) => localizer.format(date, "h:mm A", culture),
+            // Custom time format for left-side time slots
+            eventTimeRangeFormat: ({
+              start,
+              end
+            }, culture, localizer) => `${localizer.format(start, "h:mm A", culture)} – ${localizer.format(end, "h:mm A", culture)}` // Format for event time range
+          },
+          onSelectEvent: handleSelectEvent // Handle event clicks
         })]
       })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_components_appointmentDetails__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      appointment: selectedAppointment,
+      onClose: handleCloseModal
     })]
   });
 };
 const initCalender = () => {
-  const calenderDiv = document.getElementById('bp-calender-root');
+  const calenderDiv = document.getElementById("bp-calender-root");
   if (calenderDiv) {
     const root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(calenderDiv);
-    root.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(Calender, {}));
+    root.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(Calender, {}));
   } else {
-    console.error('Calendar root element not found.');
+    console.error("Calendar root element not found.");
   }
 };
-document.addEventListener('DOMContentLoaded', initCalender);
+document.addEventListener("DOMContentLoaded", initCalender);
 })();
 
 /******/ })()

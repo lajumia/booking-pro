@@ -114,6 +114,7 @@ class BP_Admin
                 wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $cal_dep['version']); 
                 wp_enqueue_style('bp-big-calender', BP_DIR_URL . 'admin/assets/css/react-big-calender.css', [], $cal_dep['version']);
                 wp_enqueue_style ('bp-calender', BP_DIR_URL . 'admin/assets/css/calender.css', [], $cal_dep['version']);
+                wp_enqueue_style ('bp-appointment-dedails-modal', BP_DIR_URL.'admin/assets/css/AppointmentDetailsModal.css', [], $cal_dep['version']);
 
                 // Localize script to pass data to React app
                 wp_localize_script('bp-calender', 'bookingProCalender', [
@@ -1352,7 +1353,7 @@ class BP_Admin
 
             global $wpdb;
             $table_appointments = $wpdb->prefix . 'bp_appointments';
-            $table_time_slots = $wpdb->prefix . 'appointment_time_slot';
+            $table_time_slots = $wpdb->prefix . 'bp_appointment_time_slot';
             
             // Join the bp_appointments table with the appointment_time_slot table to get the slot_time instead of time ID
             $sql = "

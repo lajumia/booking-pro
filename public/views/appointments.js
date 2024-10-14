@@ -186,7 +186,6 @@ const AppointmentForm = () => {
         },
         body: formDataObj
       });
-      ;
       const result = await response.json();
       if (response.ok) {
         console.log(result.message);
@@ -341,10 +340,10 @@ const AppointmentForm = () => {
               onChange: handleChange,
               name: "time",
               value: appointmentFormData.time,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("option", {
                 disabled: true,
                 value: "",
-                children: "Select time "
+                children: ["Select time", " "]
               }), timeSlot && timeSlot.map((item, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
                 value: item.id,
                 children: item.slot_time
@@ -370,7 +369,7 @@ const AppointmentForm = () => {
       case 4:
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("fieldset", {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
-            class: "fs-title",
+            className: "fs-title",
             children: "Personal Details"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "services",
@@ -421,7 +420,7 @@ const AppointmentForm = () => {
       case 5:
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("fieldset", {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
-            class: "fs-title",
+            className: "fs-title",
             children: "Payments"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             className: "services",
