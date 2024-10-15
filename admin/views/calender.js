@@ -21765,10 +21765,10 @@ const Calender = () => {
 
   // Define the time range
   const minTime = new Date();
-  minTime.setHours(8, 0, 0); // Start at 8:00 AM
+  minTime.setHours(9, 0, 0); // Start at 8:00 AM
 
   const maxTime = new Date();
-  maxTime.setHours(18, 0, 0); // End at 5:00 PM
+  maxTime.setHours(21, 0, 0); // End at 5:00 PM
 
   // Fetch appointments from the API
   const [appointments, setAppointments] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);

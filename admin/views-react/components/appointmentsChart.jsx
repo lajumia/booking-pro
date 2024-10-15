@@ -1,36 +1,63 @@
-import React from 'react';
-import { Pie } from 'react-chartjs-2';
-import 'chart.js/auto';
+import React, { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
 
 const AppointmentsChart = () => {
-    // Sample data for appointments vs days
-    const data = {
-        labels: ['1 Sep', '2 Sep', '3 Sep', '4 Sep', '5 Sep', '6 Sep', '7 Sep'], // Replace with dynamic labels
-        datasets: [
-            {
-                label: 'Appointments',
-                data: [5, 10, 8, 12, 6, 7, 9], // Replace with dynamic data
-                fill: false,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-            },
-        ],
-    };
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Appointments",
+        data: [],
+        backgroundColor: "rgb(113, 236, 164, .6)",
+        borderColor: "rgba(54, 162, 235, 1)",
+      },
+    ],
+  });
 
-    const options = {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-            },
-        },
-    };
+  // Function to fetch data from your API
+  const fetchAppointmentsData = () => {
+    fetch(`${bookingProDashboard.api_base_url}get-appointments-chart`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProDashboard.nonce,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const results = data.data;
+        if (results) {
+          const labels = results.map((item) => item.date);
+          const appointments = results.map((item) => item.appointments);
 
-    return (
-        <div style={{ width: '100%', height: '200px' }}>
-            <Pie data={data} />
-        </div>
-    );
+          // Update the chart data
+          setChartData({
+            labels: labels,
+            datasets: [
+              {
+                label: "Appointments",
+                data: appointments,
+                backgroundColor: "rgba(54, 162, 235, 0.6)",
+                borderColor: "rgba(54, 162, 235, 1)",
+              },
+            ],
+          });
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+
+  // Fetch data when the component mounts
+  useEffect(() => {
+    fetchAppointmentsData();
+  }, []);
+
+  return (
+    <div style={{ width: "100%", height: "200px" }}>
+      <Bar data={chartData} />
+    </div>
+  );
 };
 
 export default AppointmentsChart;

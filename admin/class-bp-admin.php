@@ -37,6 +37,13 @@ class BP_Admin
 
             // Calender page routes
             $this->bp_register_rest_routes_get_appointments_by_status();
+
+            // Dashboard pgae routes
+            $this->bp_register_rest_routes_get_appointments_overview();
+            $this->bp_register_rest_routes_get_upcomming_appointments();
+            $this->bp_register_rest_routes_get_appointments_data_for_chart();
+            $this->bp_register_rest_routes_get_revenue_data_for_chart();
+
         }
     //Construct for hook end
 
@@ -89,7 +96,14 @@ class BP_Admin
 
                 $dash_dep = require_once('views/dashboard.asset.php');
                 wp_enqueue_script('bp-dashboard', BP_DIR_URL . 'admin/views/dashboard.js', $dash_dep['dependencies'],$dash_dep['version'], true);
-                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $dash_dep['version']);            
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $dash_dep['version']);  
+                
+                // Localize script to pass data to React app
+                wp_localize_script('bp-dashboard', 'bookingProDashboard', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'dashboardPageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);
             
             }elseif($hook == 'booking-pro_page_bp-appointments'){
 
@@ -1387,6 +1401,218 @@ class BP_Admin
             
         }
     // Register REST API routes for calender page end
+
+    // Register REST API routes for dashboard page start
+        public function bp_register_rest_routes_get_appointments_overview(){
+            register_rest_route('booking-pro/v1', '/get-appointments-overview', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_appointments_overview_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+
+        }
+        public function bp_get_appointments_overview_callback($request) {
+            global $wpdb;
+            $table_appointments = $wpdb->prefix . 'bp_appointments';
+            $table_services = $wpdb->prefix . 'bp_services'; // Assuming this is the services table
+        
+            // SQL query to get appointment overview including total revenue from completed appointments
+            $sql = "
+                SELECT
+                    COUNT(a.id) AS total_appointments,
+                    SUM(CASE WHEN a.status = 'scheduled' THEN 1 ELSE 0 END) AS scheduled_appointments,
+                    SUM(CASE WHEN a.status = 'completed' THEN 1 ELSE 0 END) AS completed_appointments,
+                    SUM(CASE WHEN a.status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_appointments,
+                    COALESCE(SUM(CASE WHEN a.status = 'completed' THEN s.price END), 0) AS total_revenue
+                FROM $table_appointments AS a
+                LEFT JOIN $table_services AS s ON a.service_id = s.id
+            ";
+        
+            $appointments_overview = $wpdb->get_row($sql);
+        
+            // Get the count of all customers from the WordPress users table with the role 'bp_user'
+            $total_customers = count(get_users(array(
+                'role' => 'bp_user', 
+                'exclude' => get_users(array('role' => 'administrator', 'fields' => 'ID')), // Exclude administrator IDs
+                'fields' => 'ID' // Only get user IDs for counting
+            )));
+        
+            // Add the total customers to the appointments overview object
+            if (!empty($appointments_overview)) {
+                $appointments_overview->total_customers = $total_customers; // Add total customers
+        
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $appointments_overview, // Include the updated overview with total customers
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No appointments found',
+                ], 500);
+            }
+        }
+
+        public function bp_register_rest_routes_get_upcomming_appointments(){
+            register_rest_route('booking-pro/v1', '/get-upcomming-appointments', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_upcomming_appointments_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+
+        }
+        public function bp_get_upcomming_appointments_callback($request) {
+            global $wpdb;
+            $table_appointments = $wpdb->prefix . 'bp_appointments';
+            $table_services = $wpdb->prefix . 'bp_services'; // Assuming you have this table
+            $table_staff = $wpdb->prefix . 'bp_staff'; // Assuming you have this table
+            $table_time_slots = $wpdb->prefix . 'bp_appointment_time_slot';
+        
+            $sql = "
+                SELECT
+                    a.id AS appointment_id,
+                    a.full_name AS customer_name,  -- Using full_name directly from appointments
+                    s.service_name,
+                    st.name AS staff_name,
+                    s.duration AS service_duration,
+                    s.price AS service_price,  -- Get the price from the services table
+                    a.appointment_date,
+                    t.slot_time AS appointment_time
+                FROM $table_appointments AS a
+                JOIN $table_services AS s ON a.service_id = s.id  -- Join with services table
+                JOIN $table_staff AS st ON a.staff_id = st.id  -- Join with staff table
+                JOIN $table_time_slots AS t ON a.appointment_time = t.id  -- Join with time slots table
+                WHERE a.status = 'scheduled'
+                ORDER BY a.appointment_date ASC, a.appointment_time ASC
+                LIMIT 5
+            ";
+        
+            $appointments = $wpdb->get_results($sql);
+        
+            if (!empty($appointments)) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $appointments,
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No Appointments found',
+                ], 500);
+            }
+        }
+
+        public function bp_register_rest_routes_get_appointments_data_for_chart(){
+            register_rest_route('booking-pro/v1', '/get-appointments-chart', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_appointments_chart_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+
+        }
+        public function bp_get_appointments_chart_callback($request) {
+            global $wpdb;
+            $table_appointments = $wpdb->prefix . 'bp_appointments';
+        
+            // Query to get appointment counts grouped by date
+            $sql = "
+                SELECT 
+                    DATE(a.appointment_date) AS appointment_date,
+                    COUNT(a.id) AS appointment_count
+                FROM $table_appointments AS a
+                WHERE a.status = 'scheduled'
+                GROUP BY DATE(a.appointment_date)
+                ORDER BY DATE(a.appointment_date) ASC
+            ";
+        
+            // Execute the query and get results
+            $appointments_data = $wpdb->get_results($sql);
+        
+            // If data is found, return it in the expected format
+            if (!empty($appointments_data)) {
+                $formatted_data = [];
+        
+                // Format data for chart.js frontend
+                foreach ($appointments_data as $row) {
+                    $formatted_data[] = [
+                        'date' => date('j M', strtotime($row->appointment_date)), // Format date as '1 Sep', '2 Sep', etc.
+                        'appointments' => intval($row->appointment_count), // Count of appointments
+                    ];
+                }
+        
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $formatted_data, // Pass formatted data
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No Appointments found',
+                ], 500);
+            }
+        }
+
+        public function bp_register_rest_routes_get_revenue_data_for_chart(){
+            register_rest_route('booking-pro/v1', '/get-revenue-chart', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_revenue_chart_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+
+        }
+        public function bp_get_revenue_chart_callback($request) {
+            global $wpdb;
+            $table_appointments = $wpdb->prefix . 'bp_appointments';
+            $table_services = $wpdb->prefix . 'bp_services';
+        
+            // Query to get the total revenue grouped by appointment date
+            $sql = "
+                SELECT 
+                    DATE(a.appointment_date) AS revenue_date,
+                    SUM(s.price) AS total_revenue
+                FROM $table_appointments AS a
+                JOIN $table_services AS s ON a.service_id = s.id
+                WHERE a.status = 'completed' -- Only completed appointments should count towards revenue
+                GROUP BY DATE(a.appointment_date)
+                ORDER BY DATE(a.appointment_date) ASC
+            ";
+        
+            // Execute the query and get results
+            $revenue_data = $wpdb->get_results($sql);
+        
+            // Check if we have data and format it for the frontend
+            if (!empty($revenue_data)) {
+                $formatted_data = [];
+        
+                foreach ($revenue_data as $row) {
+                    $formatted_data[] = [
+                        'date' => date('j M', strtotime($row->revenue_date)), // Format date as '1 Sep', '2 Sep'
+                        'revenue' => floatval($row->total_revenue), // Ensure the revenue is a float
+                    ];
+                }
+        
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $formatted_data, // Pass formatted data
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No revenue data found',
+                ], 500);
+            }
+        }
+        
+        
+        
+        
+        
+        
+    // Register REST API routes for dashboard page end
 
 }
 new BP_Admin();

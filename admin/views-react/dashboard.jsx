@@ -1,155 +1,205 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import AppointmentsChart from "./components/appointmentsChart";
 import RevenueChart from "./components/RevenueChart";
-import CustomersChart from "./components/customerChart";
 import Header from "./components/Header";
+import HashLoader from "react-spinners/HashLoader";
 
-
-import editLogo from '../assets/images/edit.png';
+import editLogo from "../assets/images/edit.png";
 
 const Dashboard = () => {
+  const pageUrl = bookingProDashboard.dashboardPageUrl;
+  const overrideCss = {
+    position: "absolute",
+    top: "50%",
+    left: "45%",
+  };
+  const [overview, setOverview] = useState(null);
+  const [upcomingAppointments, setUpcomingAppointments] = useState(null);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [services, setServices] = useState([]);
+  const [staffs, setStaffs] = useState([]);
+  const [expandedRow, setExpandedRow] = useState(null);
+
+  const [expandedAppointmentId, setExpandedAppointmentId] = useState(null); // State for expanded rows
+
+  // Fetch upcomming and overview for appointments start
+  const fetchUpcomingAppointments = () => {
+    fetch(`${bookingProDashboard.api_base_url}get-upcomming-appointments`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProDashboard.nonce,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUpcomingAppointments(data.data);
+        console.log(data.data);
+      })
+      .catch((err) => console.log(err));
+  };
+  const fetchOverview = () => {
+    fetch(`${bookingProDashboard.api_base_url}get-appointments-overview`, {
+      method: "GET",
+      headers: {
+        "X-WP-Nonce": bookingProDashboard.nonce,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOverview(data.data);
+        //console.log(data.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    fetchOverview();
+    fetchUpcomingAppointments();
+  }, []);
+  // Fetch upcomming and overview for appointments end
+
+  // If overview is null, you may want to show a loading indicator or placeholder
+  if (!overview && !upcomingAppointments) {
     return (
-        <div>
-            <div className="bp-dash-container">
-                <Header />
+      <div>
+        <HashLoader color="#687de8" cssOverride={overrideCss} />
+      </div>
+    ); // Show loading until data is available
+  }
 
-                <div className="bp-dash-content">
-                    <div className="bp-dash-cont-inner">
-                        <div className="bpdci-top">
-                            <h2 style={{fontSize:"23px"}}>Dashboard</h2>
-                            <input className=".bpd-filter-by-date" type="date" name="" id="" />
-                        </div>
-                        <div className="bpdci-second">
-                            <div style={{backgroundColor:"rgba(112, 132, 233, 0.20)"}} className="bpdci-card">
-                                <h1>25</h1>
-                                <p>Total Appointments</p>
-                            </div>
-                            <div style={{backgroundColor:"rgba(243, 249, 0, 0.20)"}} className="bpdci-card">
-                                <h1>15</h1>
-                                <p>Pending Appointments</p>
-                            </div>
-                            <div style={{backgroundColor:"rgba(113, 236, 164, 0.20)"}} className="bpdci-card">
-                                <h1>20</h1>
-                                <p>Approved Appointments</p>
-                            </div>
-                            <div style={{backgroundColor:"rgba(235, 112, 112, 0.20)"}} className="bpdci-card">
-                                <h1>10</h1>
-                                <p>Rejected Appointments</p>
-                            </div>
-                            <div style={{backgroundColor:"rgba(113, 236, 164, 0.20)"}} className="bpdci-card">
-                                <h1>$2500</h1>
-                                <p>Total Revinue</p>
-                            </div>
-                            <div style={{backgroundColor:"rgba(185, 107, 231, 0.20)"}} className="bpdci-card">
-                                <h1>200</h1>
-                                <p>Total Customers</p>
-                            </div>
+  return (
+    <div>
+      <div className="bp-dash-container">
+        <Header currentPage="dashboard" url={pageUrl} />
 
-                        </div>
-                        <div className="bpdci-appointments">
-                            <h2 style={{ fontSize: "20px;",padding:"10px 0px"}}>Upcomming Appointments</h2>                           
-                        </div>
-                        <div className="bpdci-third">
-                            <table>
-                                <tr className="bpd-table-head">
-                                    <th>ID</th>
-                                    <th>Customer</th>
-                                    <th>Service</th>
-                                    <th>Staff</th>
-                                    <th>Duration</th>
-                                    <th>Status</th>
-                                    <th>Payment</th>
-                                    <th>Action</th>
-                                </tr>
-                                <tr className="bpd-table-item">
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>Manicure</td>
-                                    <td>John Smith</td>
-                                    <td>1 hour</td>
-                                    <td>Pending</td>
-                                    <td>$50</td>
-                                    <td><img style={{width:"20px"}} src={editLogo} alt="" /></td>
-                                </tr>
-                                <tr className="bpd-table-item">
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Pedicure</td>
-                                    <td>Emily Johnson</td>
-                                    <td>1 hour and 30 minutes</td>
-                                    <td>Approved</td>
-                                    <td>$75</td>
-                                    <td><img style={{width:"20px"}} src={editLogo} alt="" /></td>
-                                </tr>
-                                <tr className="bpd-table-item">
-                                    <td>3</td>
-                                    <td>Michael Brown</td>
-                                    <td>Waxing</td>
-                                    <td>David Wilson</td>
-                                    <td>45 minutes</td>
-                                    <td>Rejected</td>
-                                    <td>$100</td>
-                                    <td><img style={{width:"20px"}} src={editLogo} alt="" /></td>
-                                </tr>
-                                <tr className="bpd-table-item">
-                                    <td>4</td>
-                                    <td>Emily Davis</td>
-                                    <td>Facial</td>
-                                    <td>Sarah Thompson</td>
-                                    <td>1 hour and 15 minutes</td>
-                                    <td>Pending</td>
-                                    <td>$60</td>
-                                    <td><img style={{width:"20px"}} src={editLogo} alt="" /></td>
-                                </tr>
-                                <tr className="bpd-table-item">
-                                    <td>5</td>
-                                    <td>David Miller</td>
-                                    <td>Manicure</td>
-                                    <td>John Smith</td>
-                                    <td>1 hour</td>
-                                    <td>Approved</td>
-                                    <td>$50</td>
-                                    <td><img style={{width:"20px"}} src={editLogo} alt="" /></td>
-                                </tr>
-                               
-
-                            </table>
-                        </div>
-                        <div className="bpdci-analytics">
-                            <h2 style={{ fontSize: "20px;",padding:"30px 0px"}}>Analytics</h2>                           
-                        </div>
-                        <div className="bpdci-fourth">
-                            <div className="appointments">
-                                <AppointmentsChart />
-                            </div>
-                            <div className="renenue">
-                                <RevenueChart />
-                            </div>
-                            <div className="Customer">
-                                <CustomersChart />
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-
-            </div>  
+        <div className="bp-dash-content">
+          <div className="bp-dash-cont-inner">
+            <div className="bpdci-top">
+              <h2 style={{ fontSize: "23px" }}>Dashboard</h2>
+              <input
+                className=".bpd-filter-by-date"
+                type="date"
+                style={{ visibility: "hidden" }}
+                name=""
+                id=""
+              />
+            </div>
+            <div className="bpdci-second">
+              <div
+                style={{ backgroundColor: "rgba(112, 132, 233, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>{overview.total_appointments}</h1>
+                <p>Total Appointments</p>
+              </div>
+              <div
+                style={{ backgroundColor: "rgba(243, 249, 0, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>{overview.scheduled_appointments}</h1>
+                <p>Pending Appointments</p>
+              </div>
+              <div
+                style={{ backgroundColor: "rgba(113, 236, 164, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>{overview.completed_appointments}</h1>
+                <p>Completed Appointments</p>
+              </div>
+              <div
+                style={{ backgroundColor: "rgba(235, 112, 112, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>{overview.cancelled_appointments}</h1>
+                <p>Rejected Appointments</p>
+              </div>
+              <div
+                style={{ backgroundColor: "rgba(113, 236, 164, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>${overview.total_revenue}</h1>
+                <p>Total Revenue</p>
+              </div>
+              <div
+                style={{ backgroundColor: "rgba(185, 107, 231, 0.20)" }}
+                className="bpdci-card"
+              >
+                <h1>{overview.total_customers}</h1>
+                <p>Total Customers</p>
+              </div>
+            </div>
+            <div className="bpdci-appointments">
+              <h2 style={{ fontSize: "20px", padding: "10px 0px" }}>
+                Upcoming Appointments
+              </h2>
+            </div>
+            <div className="bpdci-third">
+              <table>
+                <thead className="bpd-table-head">
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Staff</th>
+                    <th>Duration</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Payment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {upcomingAppointments &&
+                    upcomingAppointments.map((appointment) => (
+                      <React.Fragment key={appointment.appointment_id}>
+                        <tr className="bpd-table-item">
+                          <td>{appointment.appointment_id}</td>
+                          <td>{appointment.customer_name}</td>
+                          <td>{appointment.service_name}</td>
+                          <td>{appointment.staff_name}</td>
+                          <td>{appointment.service_duration} minutes</td>
+                          <td>{appointment.appointment_date}</td>
+                          <td>{appointment.appointment_time}</td>
+                          <td>${appointment.service_price}</td>
+                          <td></td>
+                        </tr>
+                      </React.Fragment>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="bpdci-analytics">
+              <h2 style={{ fontSize: "20px", padding: "30px 0px" }}>
+                Analytics
+              </h2>
+            </div>
+            <div className="bpdci-fourth">
+              <div className="appointments">
+                <AppointmentsChart />
+              </div>
+              <div className="renenue">
+                <RevenueChart />
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 const initDashboard = () => {
-    const dashboardDiv = document.getElementById('bp-dashboard-root');
+  const dashboardDiv = document.getElementById("bp-dashboard-root");
 
-    if (dashboardDiv) { 
-        const root = createRoot(dashboardDiv);
-        root.render(<Dashboard />);
-    } else {
-        console.error('Dashboard root element not found.');
-    }
+  if (dashboardDiv) {
+    const root = createRoot(dashboardDiv);
+    root.render(<Dashboard />);
+  } else {
+    console.error("Dashboard root element not found.");
+  }
 };
 
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener("DOMContentLoaded", initDashboard);
