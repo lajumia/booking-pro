@@ -186,16 +186,41 @@ class BP_Admin
 
                 $not_dep = require_once('views/notifications.asset.php');
                 wp_enqueue_script('bp-notifications', BP_DIR_URL . 'admin/views/notifications.js', $not_dep['dependencies'], $not_dep['version'], true);
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $not_dep['version']);
+
+                // Localize script to pass data to React app
+                wp_localize_script('bp-notifications', 'bookingProNotifications', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'notificationsPageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);
 
             }elseif($hook == 'booking-pro_page_bp-addons'){
 
                 $add_dep = require_once('views/addons.asset.php');
                 wp_enqueue_script('bp-addons', BP_DIR_URL . 'admin/views/addons.js', $add_dep['dependencies'], $add_dep['version'], true);
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $add_dep['version']);
+
+                // Localize script to pass data to React app
+                wp_localize_script('bp-addons', 'bookingProAddons', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'addonsPageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);
 
             }elseif($hook == 'booking-pro_page_bp-settings'){
 
                 $set_dep = require_once('views/settings.asset.php');
                 wp_enqueue_script('bp-settings', BP_DIR_URL . 'admin/views/settings.js', $set_dep['dependencies'], $set_dep['version'], true);
+                wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $set_dep['version']);
+
+
+                // Localize script to pass data to React app
+                wp_localize_script('bp-settings', 'bookingProSettings', [
+                    'nonce' => wp_create_nonce('wp_rest'),  // Generate a nonce for secure REST requests
+                    'settingsPageUrl' => admin_url('admin.php?page='),
+                    'api_base_url' => get_site_url() . '/wp-json/booking-pro/v1/',
+                ]);
 
             }else{
                 return;
