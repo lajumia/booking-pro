@@ -1,0 +1,87 @@
+ul.setting-nav {
+    display: flex;
+    gap: 30px;
+    margin: 0px;
+    background: #f0f0f1;
+    justify-content: flex-start!important;
+}
+
+ul.setting-nav li a {
+    padding: 10px 20px;
+    outline:none!important;
+    text-decoration: none;
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #687de8;
+}
+ul.setting-nav li a:focus {
+    outline:none!important;
+}
+.sci-item {
+    padding: 7px 5px 7px 14px;
+    text-align: center;
+    background: #687de8;
+    border-radius: 20px;
+    font-weight: 500;
+    margin: 10px;
+    font-size: 10px;
+    color: white;
+}
+
+.sci-left {
+    display: flex;
+    width: 50%;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.sci-right {
+    display: flex;
+    width: 50%;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.settings-page {
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.settings-content {
+    background: #d7d7ffc4;
+    padding-top: 30px;
+    border-radius: 10px;
+    height: 50vh;
+}
+
+.slot-con-inner {
+    display: flex;
+}
+.active-s-ul-li-a {
+    padding: 10px 20px;
+    margin-bottom: 0px;
+    border: 1px solid #687de8;
+    background: #ddddfc;
+    border-bottom: none;
+    border-radius: 5px 5px 0px 0px;
+}
+
+input.add_slot_input {
+    padding: 5px 8px;
+    width: 200px;
+    border: 1px solid #687de84a;
+    border-radius: 20px;
+}
+button.add_slot {
+    margin-left: 20px;
+    background: #687de8;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+span.dashicons.dashicons-dismiss {
+    margin-left: 10px;
+    cursor: pointer;
+}

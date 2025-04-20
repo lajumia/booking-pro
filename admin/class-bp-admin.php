@@ -38,11 +38,16 @@ class BP_Admin
             // Calender page routes
             $this->bp_register_rest_routes_get_appointments_by_status();
 
-            // Dashboard pgae routes
+            // Dashboard page routes
             $this->bp_register_rest_routes_get_appointments_overview();
             $this->bp_register_rest_routes_get_upcomming_appointments();
             $this->bp_register_rest_routes_get_appointments_data_for_chart();
             $this->bp_register_rest_routes_get_revenue_data_for_chart();
+
+            // Settings page routes
+            $this->bp_register_rest_routes_get_time_slots();
+            $this->bp_register_rest_routes_remove_time_slot();
+            $this->bp_register_rest_routes_add_time_slot();
 
         }
     //Construct for hook end
@@ -213,7 +218,8 @@ class BP_Admin
                 $set_dep = require_once('views/settings.asset.php');
                 wp_enqueue_script('bp-settings', BP_DIR_URL . 'admin/views/settings.js', $set_dep['dependencies'], $set_dep['version'], true);
                 wp_enqueue_style ('bp-dashboard', BP_DIR_URL . 'admin/assets/css/dashboard.css', [], $set_dep['version']);
-
+                wp_enqueue_style ('bp-settings', BP_DIR_URL . 'admin/assets/css/settings.css', [], $set_dep['version']);
+                wp_enqueue_style ('bp-tostify', BP_DIR_URL.'admin/assets/css/ReactTostify.css', [], $set_dep['version']);
 
                 // Localize script to pass data to React app
                 wp_localize_script('bp-settings', 'bookingProSettings', [
@@ -1639,5 +1645,126 @@ class BP_Admin
         
     // Register REST API routes for dashboard page end
 
+    // Register REST API routes for settings page start
+        // Get slots
+        public function bp_register_rest_routes_get_time_slots(){
+            register_rest_route('booking-pro/v1', '/get-time-slots', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'bp_get_time_slots_callback'],
+                'permission_callback' => '__return_true',
+
+            ]);
+
+        }
+        public function bp_get_time_slots_callback($request) {
+            global $wpdb;
+            $table_time_slots = $wpdb->prefix . 'bp_appointment_time_slot';
+
+            $sql = "SELECT * FROM $table_time_slots";
+            $time_slots = $wpdb->get_results($sql);
+
+            if (!empty($time_slots)) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'data' => $time_slots,
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'No time slots found',
+                ], 500);
+            }
+        }
+
+        // Register remove slots REST route
+        public function bp_register_rest_routes_remove_time_slot(){
+            register_rest_route('booking-pro/v1', '/remove-time-slot/(?P<id>\d+)', [
+                'methods'  => 'DELETE',
+                'callback' => [$this, 'bp_remove_time_slot_callback'],
+                'permission_callback' => '__return_true',
+                'args' => [
+                    'id' => [
+                        'required' => true,
+                        'sanitize_callback' => 'absint', // Ensure the value is a positive integer
+                    ],
+                ],
+            ]);
+        }
+        public function bp_remove_time_slot_callback($request) {
+            global $wpdb;
+            $table_time_slots = $wpdb->prefix . 'bp_appointment_time_slot';
+
+            $slot_id = $request['id'];
+
+            // Check if the slot exists before attempting to delete
+            $slot_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_time_slots WHERE id = %d", $slot_id));
+
+            if (!$slot_exists) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Time slot does not exist',
+                ], 404);
+            }
+
+            // Attempt to delete the time slot
+            $result = $wpdb->delete($table_time_slots, ['id' => $slot_id]);
+
+            if ($result !== false) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Time slot removed successfully',
+                ], 200);
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to remove time slot',
+                ], 500);
+            }
+        }
+
+        // Register add slots REST route
+        public function bp_register_rest_routes_add_time_slot(){
+            register_rest_route('booking-pro/v1', '/add-time-slot', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'bp_add_time_slot_callback'],
+                'permission_callback' => '__return_true',
+            ]);
+        }
+        public function bp_add_time_slot_callback($request) {
+            global $wpdb;
+            $table_time_slots = $wpdb->prefix . 'bp_appointment_time_slot';
+
+            $slot_time = $request['slot_time'];
+
+            // Check if the slot time already exists
+            $slot_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_time_slots WHERE slot_time = %s", $slot_time));
+
+            if ($slot_exists) {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Time slot already exists',
+                ], 200); 
+            }
+
+            // Insert the new time slot
+            $result = $wpdb->insert($table_time_slots, ['slot_time' => $slot_time]);
+
+            if ($result !== false) {
+                return new WP_REST_Response([
+                    'status' => 'success',
+                    'message' => 'Time slot added successfully',
+                ], 201); // 201 Created
+            } else {
+                return new WP_REST_Response([
+                    'status' => 'failed',
+                    'message' => 'Failed to add time slot',
+                ], 500);
+            }
+        }
+
+        // Register update slots REST route
+
+    // Register REST API routes for settings page end
+        
 }
 new BP_Admin();
